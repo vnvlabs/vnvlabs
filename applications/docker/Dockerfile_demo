@@ -1,0 +1,9 @@
+FROM vnv_simple:latest as simple
+FROM vnv_heat:latest as heat
+
+COPY --from=simple /source/simple /source/simple
+ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/simple/build/vnv.__registration__:
+
+COPY demo_config /config
+ENV VNV_CONFIG=${VNV_CONFIG}:/config/vnv.__registration__
+

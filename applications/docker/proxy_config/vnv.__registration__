@@ -1,0 +1,10 @@
+{
+    "logo" : {
+        "small" : "static/logo.png",
+        "icon" : "static/favicon.ico"
+    },
+    "copyright" : {
+        "message" : "RNET Technolgies Inc.",
+        "link" : "https://rnet-tech.com"
+    }
+}

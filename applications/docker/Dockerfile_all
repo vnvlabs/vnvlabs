@@ -1,0 +1,42 @@
+
+FROM vnv_asgard:latest as asgard
+
+FROM vnv_heat:latest as heat
+
+FROM vnv_mfem:latest as mfem 
+
+FROM vnv_miniamr:latest as miniamr
+
+FROM vnv_simple:latest as simple
+
+FROM vnv_swfft:latest as swfft
+
+FROM vnv_xs_bench:latest as xsbench
+
+# Moose has vnv-hypre-petsc-libmesh-moose all installed already. 
+FROM vnv_moose:latest as moose
+
+COPY --from=asgard /source/asgard /source/asgard
+ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/asgard/build/vnv.__registration__
+
+COPY --from=heat /source/heat /source/heat
+ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/heat/build/vnv.__registration__
+
+COPY --from=mfem /source/mfem /source/mfem
+COPY --from=mfem /software/mfem /software/mfem
+ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/mfem/docker_build/vnv.__registration__
+
+COPY --from=miniamr /source/miniAMR /source/miniAMR
+ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/swfft/build/vnv.__registration__
+
+COPY --from=simple /source/simple /source/simple
+ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/simple/build/vnv.__registration__
+
+COPY --from=swfft /source/swfft /source/swfft
+ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/swfft/build/vnv.__registration__
+
+COPY --from=xsbench /source/xs-bench /source/xs-bench
+ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/xs-bench/vnv.__registration__
+
+COPY all_config /config
+ENV VNV_CONFIG=${VNV_CONFIG}:/config/vnv.__registration__

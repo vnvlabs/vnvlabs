@@ -1,0 +1,45 @@
+[submodule "vnv"]
+	path = vnv
+	url = git@github.com:vnvlabs/vnv.git
+[submodule "gui"]
+	path = gui
+	url = git@github.com:vnvlabs/gui.git
+[submodule "server"]
+	path = server
+	url = git@github.com:vnvlabs/server.git
+[submodule "applications/xsbench"]
+	path = applications/xsbench
+	url = git@github.com:vnvlabs/xsbench.git
+[submodule "applications/swfft"]
+	path = applications/swfft
+	url = git@github.com:vnvlabs/swfft.git
+[submodule "applications/petsc"]
+	path = applications/petsc
+	url = git@github.com:vnvlabs/petsc.git
+[submodule "applications/simple"]
+	path = applications/simple
+	url = git@github.com:vnvlabs/simple.git
+[submodule "applications/miniamr"]
+	path = applications/miniamr
+	url = git@github.com:vnvlabs/miniamr.git
+[submodule "applications/mfem"]
+	path = applications/mfem
+	url = git@github.com:vnvlabs/mfem.git
+[submodule "applications/heat"]
+	path = applications/heat
+	url = git@github.com:vnvlabs/heat.git
+[submodule "applications/libmesh"]
+	path = applications/libmesh
+	url = git@github.com:vnvlabs/libmesh.git
+[submodule "applications/hypre"]
+	path = applications/hypre
+	url = git@github.com:vnvlabs/hypre.git
+[submodule "applications/asgard"]
+	path = applications/asgard
+	url = git@github.com:vnvlabs/asgard.git
+[submodule "plugins/performance"]
+	path = plugins/performance
+	url = git@github.com:vnvlabs/performance.git
+[submodule "plugins/quantify"]
+	path = plugins/quantify
+	url = git@github.com:vnvlabs/quantify.git

@@ -1,0 +1,15 @@
+FROM vnv_swfft:latest as vnv_swfft
+RUN echo $VNV_CONFIG 
+
+FROM vnv_miniamr:latest as miniamr
+RUN echo $VNV_CONFIG 
+
+FROM vnv_xs_bench:latest as xsbench
+COPY --from=vnv_swfft /source/swfft /source/swfft
+COPY --from=miniamr /source/miniAMR /source/miniAMR
+
+COPY proxy_config /config
+ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/swfft/build/vnv.__registration__:
+ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/miniAMR/ref/vnv.__registration__
+ENV VNV_CONFIG=${VNV_CONFIG}:/config/vnv.__registration__
+
