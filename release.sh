@@ -6,7 +6,6 @@ REPO_OWNER=ghcr.io/vnvlabs
 
 ./docker.sh
 
-
 for package in env demo proxy_apps mfem moose asgard all serve 
 do
 docker tag vnv_${package}:latest ${REPO_OWNER}/${package}:${REON}
