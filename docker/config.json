@@ -1,0 +1,18 @@
+{
+	"port" : 5001,
+	"DEBUG" : false,
+	"DEFAULT_USERS" : {
+		"Admin" : { "admin" : true}
+	},
+	"DOCKER_IMAGES": {
+		"ghcr.io/vnvlabs/demo:latest" : ["VnV Demo Examples" , "A Set of Simple VnV Examples"],
+		"ghcr.io/vnvlabs/moose:latest" : ["MOOSE", "Multiphysics Object-Oriented Simulation Environment"],
+		"ghcr.io/vnvlabs/mfem:latest" : ["MFEM", "a free, lightweight, scalable C++ library for finite element methods"],
+		"ghcr.io/vnvlabs/asgard:latest" : ["Asgard", "Adaptive Sparse Grid Discretization"],
+		"ghcr.io/vnvlabs/proxy_apps:latest" : ["ECP Proxy Apps", "A collection of ECP Proxy Applications"],
+		"ghcr.io/vnvlabs/all:latest" : ["The Kitchen Sink", "The full collection of VnV Example Applications"]
+	},
+	"AUTHORIZATION_CODES" : ["Trial"]
+}	
+
+
