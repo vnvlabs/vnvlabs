@@ -1,17 +1,106 @@
-# VnV: A self documenting Testing Framework for In-situ Verification and Validation in HPC Applications.
+# The VnV Toolkit Project:
 
-TODO: This is old
+VnV Toolkit is a C++ API and Runtime that can be used to add support for end-user verification and validation within scientific applications. 
+The toolkit uses a performant MACRO based system and Plugin API to provide a number of features that will allow the USERS of the DEVELOPERS 
+application to ANALYZE, VERIFY and VALIDATE the results produced by the given application. 
 
- The VnV framework facilitates the development of explainable numerical simulation packages and applications. The goal is to make numerical simulations accessible to novice end-users by providing a uniform interface for configuring, running, and analyzing numerical simulations.  
+The VnV toolkit uses DATA extracted during the simulation to generate an interactive SIMULATION REPORT that summarizes the results of simulation.
+The toolkit supports the full range of VERIFICATION AND VALIDATION PROCESSES:
 
-![](docs/VnVOut.png)
+Features include:
+   - A Builtin Unit Testing Framework.
+   - Function level Integration Testing (configurable at runtime by the end-user).  
+   - Application level Integration Testing.
+   - Provenance Tracking. 
+   - Input file validation
+   - Live Data Visualization using real simulation data. 
+   - Performance Monitoring   
+   - Uncertainty Quantification and Sensitivity Analysis
+   - A Browser based Execution and Report Viewing GUI.  
+ 
+The toolkit includes an extensive Browser based GUI for simulation design, execution and analysis: The features of the GUI include:
 
-*The VnV toolkit. Here, green boxes represent core functionalities. Developer interactions are shown in blue, runtime interactions are shown in orange and post-processing interactions are shown in black.*
+  - Input file GUI including live validation and autocomplete. 
+  - Remote Execution using SSH.
+  - A fully featured IDE built using Eclipse Theia. 
+  - 3D visualization using Paraviewweb.
+  - View Live Interactive Simulation reports
+  - Supports multi-user  SAAS deployment using Docker. 
 
-The figure above uses the MOOSE tool-chain to show how developers and end-users will interact with the VnV framework. The first step is to define the injection points. These injection points will be placed at key locations of the code where testing can and should take place. Developers will also complete an output template describing the state of the simulation at each injection point. That specification will be used to populate the final VnV report.
+## Try it out:
 
-The next step is to create a VnV test. The tests are developed in external libraries and hence, can be developed either by the developer of the simulation or by the end-user of the library. The core framework will also include a robust set of general purpose V&V tests. Each test will be accompanied by a markdown formatted template file. Like injection points, this markdown file will be used to describe the test and present the results. The VnV framework supports a custom markdown format that includes a range of data visualization techniques. We envision that the developers of a numerical simulation package will ship the library with hard-coded injection points and a set of custom V&V tests.
+### A Simple Demo Application.
 
-End-users will be able to generate a customized input configuration file for each executable. This configuration file will contain information about every injection point located in the call-graph of the simulation; including those in external third party libraries. After customizing that file, generating a VnV report is as simple as running the simulation.
+The following docker command will launch a VnV container running on localhost pre installed with 
+a range of VnV Applications. . You can navigate to localhost:5001 in the browser to see the GUI. 
 
-Overall, once integrated into an application, the VnV framework will provide a simple mechanism for creating self verifying, self describing, explainable numerical simulations. This will significantly reduce the burden associated with V&V for end users, thereby increasing the usability of the tools for non-expert end-users. 
+    docker run --rm -it -p 5001:5001 ghcr.io/vnvlabs/all /vnv-gui/run.sh
+
+Notes:
+   1. The GUI runs inside a docker container where you (the user) has root access. You are logged in as root!
+   2. All the source code for the various applications are in /source/* . Software with an install step was in installed in /software/*
+   3. Your container will cease to exist as soon as you exit the docker run command. This is just for demo purposes. 
+
+### Software As A Service
+   
+The following command will deploy the VnV Toolkits SAAS container wrapper. This wrapper lets users create and use containers 
+prebuilt using VnV software. It is a really basic html front-end and flask based reverse proxy that allows users to manage the spinning 
+up and shutting down of containers. 
+
+    docker run --rm -it --network="host" -v /var/run/docker.sock:/var/run/docker.sock ghcr.io/vnvlabs/serve
+
+Notes:
+   1. The default username is Admin. The password will be printed to standard out during initialization. 
+   2. The container uses a docker-in-docker scheme to launch containers on behalf of the users. 
+   3. When you exit the container, all user information will be lost --- BUT -- Any containers created by the container while it was alive will still be active. All containers launched by this application are given the prefix "vnv-"
+   4. The container also allows users to snapshot a container. The images that result from this snapshot will exist beyond the end of the container. You will need to delete those manually. They also all have the prefix "vnv-"
+   5. A universal volume is created for each user. This volume is mounted in the /data/ directory of every container launched by the user. This lets users transfer data between containers instantly. 
+   6. All the containers run on the same machine -- the machine that is hosting the webserver. In the future, the SAAS deployment will support docker swarm and/or kubernetes to run containers using remote resources.
+   7. Each User is given an account balance of $100 when they create an account. THIS BALANCE IS FAKE. It is just there as a mechanism for demostrating the containers abilitiy to track the uptime of each users containers. 
+
+# Integrate VnV Into your code base
+
+The process of integrating VnV into your codebase depends on the build system you are using. 
+
+  ## CMAKE 
+   
+  The Core VnV library uses a CMAKE build system. As part of that install, it creates the appropriate 
+  cmake files such that the library can be picked up using the standard CMAKE find_package function. Some examples include:
+  
+   - https://github.com/vnvlabs/heat
+   - https://github.com/vnvlabs/simple
+   - https://github.com/vnvlabs/asgard
+   - https://github.com/vnvlabs/hypre
+   - https://github.com/vnvlabs/mfem
+
+  ## Other:
+  
+  It is a little bit harder to get VnV integrated into an autotools project, primarily because of the
+  code generation step. However, it can be done. Some examples include:
+  
+  - https://github.com/vnvlabs/libmesh (Autotools project)
+  - https://github.com/vnvlabs/petsc (Custom build system)
+  - https://github.com/vnvlabs/xsbench (GNU Make)
+ 
+# Project Layout:
+
+Whereever possible, we have broken the codebase into single priority repositories. The main repos are:
+
+   - vnvlabs A single cactch all repo containing submodule links to the various other repositories.
+   - vnv : The core vnv API and runtime. 
+   - gui : The flask implementation of the VnV Graphical user interface
+   - server: A simple flask based reverse proxy and html front end for SAAS style deployment
+
+# License:
+
+Each repository contains its own licensing information. FFor the most part, all vnvlabs code (the core api,
+the gui, the SAAS server and a few of the application examples) are released using the three clause BSD license. 
+
+This repository includes a number of forks for third party software. All software forks (moose,libmesh,petsc,hypre,mfem,asgard,
+swfft,xs-bench,miniamr,etc.) are simply exist only for demonstration and testing purposes. We will attempt to keep these forks up
+to date with the upstream repositories, however, we make no claims that they are up to date at any given time. The hope is that our VnV 
+modifications will eventually make their way into the upstream codebases, removing the need for the vnvlabs forks. 
+   
+   
+   
+   
