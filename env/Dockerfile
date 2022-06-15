@@ -30,8 +30,9 @@ RUN apt-get -y update && apt-get -y upgrade && apt-get purge openmpi* && apt-get
     flex	\
     gcc\
     g++\
-    mpich\
-    libmpich-dev \
+    openmpi-bin \
+    openmpi-common \
+    libopenmpi-dev \
     gfortran\
     libboost-all-dev \
     libblas-dev \
@@ -64,7 +65,7 @@ ENV LLVM_DIR=/usr/lib/llvm-${llvm_version}
 RUN apt-get install -y clang-${llvm_version} lldb-${llvm_version} lld-${llvm_version} clangd-${llvm_version} clang-tidy-${llvm_version} clang-format-${llvm_version} clang-tools-${llvm_version} llvm-${llvm_version}-dev lld-${llvm_version} lldb-${llvm_version} llvm-${llvm_version}-tools libomp-${llvm_version}-dev libc++-${llvm_version}-dev libc++abi-${llvm_version}-dev libclang-common-${llvm_version}-dev libclang-${llvm_version}-dev libclang-cpp${llvm_version}-dev libunwind-${llvm_version}-dev
 
 
-RUN apt-get purge -y openmpi*
+#RUN apt-get purge -y openmpi*
 
 
 #Install adios
