@@ -22,7 +22,6 @@ RUN apt-get -y update && apt-get -y upgrade && apt-get purge openmpi* && apt-get
     bzip2 \
     doxygen \
     swig \
-    python-dev \
     python3-dev \
     python3-pip \
     libfftw3-dev \
@@ -58,7 +57,12 @@ RUN mkdir -p cmake &&\
 
 #Install llvm
 ENV LLVM_DIR=/usr/lib/llvm-${llvm_version}
-RUN wget https://apt.llvm.org/llvm.sh && chmod u+x ./llvm.sh && ./llvm.sh ${llvm_version} && rm ./llvm.sh && apt-get install -y libclang-12-dev 
+
+# -- problems with llvm 12 repo for ubuntu 22.04?
+#RUN wget https://apt.llvm.org/llvm.sh && chmod u+x ./llvm.sh && ./llvm.sh ${llvm_version} && rm ./llvm.sh && apt-get install -y libclang-${llvm_version}-dev
+
+RUN apt-get install -y clang-${llvm_version} lldb-${llvm_version} lld-${llvm_version} clangd-${llvm_version} clang-tidy-${llvm_version} clang-format-${llvm_version} clang-tools-${llvm_version} llvm-${llvm_version}-dev lld-${llvm_version} lldb-${llvm_version} llvm-${llvm_version}-tools libomp-${llvm_version}-dev libc++-${llvm_version}-dev libc++abi-${llvm_version}-dev libclang-common-${llvm_version}-dev libclang-${llvm_version}-dev libclang-cpp${llvm_version}-dev libunwind-${llvm_version}-dev
+
 
 RUN apt-get purge -y openmpi*
 
@@ -78,17 +82,21 @@ RUN git clone https://bitbucket.org/icl/papi.git &&  cd papi/src && ./configure 
 RUN git clone https://github.com/mongodb/mongo-c-driver.git \
     && cd mongo-c-driver \
     && git checkout 1.20.1 \
-    && python build/calc_release_version.py > VERSION_CURRENT \
+    && python3 build/calc_release_version.py > VERSION_CURRENT \
     && mkdir cmake-build \
     && cd cmake-build \
     && cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF .. \
     && cmake --build . \
     && cmake --build . --target install
 
+#libssl1.1 for mongo db server
+RUN echo "deb http://security.ubuntu.com/ubuntu impish-security main" | tee /etc/apt/sources.list.d/impish-security.list
+RUN apt-get update && apt-get install libssl1.1
+
 RUN wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | apt-key add -
 RUN echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/5.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-5.0.list
 
-RUN apt-get update && apt-get install -y mongodb-server  curl wget libsecret-1-dev xz-utils  
+RUN apt-get update && apt-get install -y mongodb-org-server  curl wget libsecret-1-dev xz-utils
 
 ARG NODE_VERSION=12.18.3
 ENV NODE_VERSION=$NODE_VERSION
