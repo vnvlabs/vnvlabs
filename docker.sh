@@ -22,5 +22,7 @@ cd applications
 ./docker.sh vnv_gui vnv_gui
 cd .. 
 
-cd server
-./docker.sh vnv_env vnv_serve
+#Build the dockerm image -- This is a flask server for managing docker containers. 
+cd dockerm 
+./docker.sh vnv_dockerm
+
