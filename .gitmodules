@@ -49,3 +49,9 @@
 [submodule "applications/moose"]
 	path = applications/moose
 	url = git@github.com:vnvlabs/moose.git
+[submodule "saas"]
+	path = saas
+	url = git@github.com:vnvlabs/saas.git
+[submodule "dockerm"]
+	path = dockerm
+	url = git@github.com:vnvlabs/dockerm.git
