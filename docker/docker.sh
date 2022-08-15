@@ -13,7 +13,7 @@ do
   docker build -t ${REPO_OWNER}/${package}:${REON} \
                --label vnvcommit="$GITHASHNUM" \
 	       --build-arg FROM_IMAGE=vnv_${package}:latest \
-	       --build-arg GUI_IMAGE=vnv_gui . 
+	       --build-arg GUI_IMAGE=vnv_gui:latest . 
 
 done
 
@@ -21,13 +21,7 @@ done
 for package in dockerm serve 
 do
   echo "FROM vnv_${package}:latest" | docker build --label vnvcommit="$GITHASHNUM" -t "${REPO_OWNER}/${package}:${REON}" -
-  docker push ${REPO_OWNER}/${package}:${REON}
 done  
 
-### Push everything to the repo.
-for package in env demo proxy_apps mfem moose asgard all dockerm serve
-do
-  docker push ${REPO_OWNER}/${package}:${REON}
-done
 
 
