@@ -15,16 +15,12 @@ cd plugins
 cd .. 
 
 cd gui 
-./docker.sh vnv_base vnv_gui 
+./docker.sh vnv_base vnv_gui  
 cd ..
 
 cd applications 
-./docker.sh vnv_gui vnv_gui
+./docker.sh vnv_base 
 cd .. 
-
-cd server
-./docker.sh vnv_env vnv_serve
-cd ..
 
 #Build the dockerm image -- This is a flask server for managing docker containers. 
 cd dockerm 
@@ -34,4 +30,7 @@ cd ..
 cd saas
 ./docker.sh vnv_saas
 
+
+cd docker 
+./docker.sh $1
 
