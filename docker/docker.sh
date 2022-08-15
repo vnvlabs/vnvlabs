@@ -18,14 +18,14 @@ do
 done
 
 ### Retag all the non vnv images . 
-for package in dockerm serve saas
+for package in dockerm serve 
 do
   echo "FROM vnv_${package}:latest" | docker build --label vnvcommit="$GITHASHNUM" -t "${REPO_OWNER}/${package}:${REON}" -
   docker push ${REPO_OWNER}/${package}:${REON}
 done  
 
 ### Push everything to the repo.
-for package in env demo proxy_apps mfem moose asgard all dockerm serve saas
+for package in env demo proxy_apps mfem moose asgard all dockerm serve
 do
   docker push ${REPO_OWNER}/${package}:${REON}
 done

@@ -27,9 +27,6 @@ cd dockerm
 ./docker.sh vnv_dockerm
 cd ..
 
-cd saas
-./docker.sh vnv_saas
-
 
 cd docker 
 ./docker.sh $1
