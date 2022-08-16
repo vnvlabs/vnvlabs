@@ -2,9 +2,9 @@
 #(the script is little -- this thing takes fooooorever to build)
 
 
-#cd env 
-#./docker.sh vnv_env 
-#cd ..
+cd env 
+./docker.sh vnv_env 
+cd ..
 
 cd vnv 
 ./docker.sh vnv_env vnv_raw 

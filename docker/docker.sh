@@ -7,7 +7,7 @@ GITHASHNUM=$(git rev-parse --short HEAD)
 
 #Inject the gui into everyone of the applications. 
 #Do this now so we dont have to rebuild everything when we edit the gui.
-for package in env demo proxy_apps mfem moose asgard all 
+for package in env demo proxy_apps hypre petsc mfem moose asgard all 
 do
   
   docker build -t ${REPO_OWNER}/${package}:${REON} \
