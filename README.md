@@ -90,6 +90,17 @@ Whereever possible, we have broken the codebase into single priority repositorie
    - vnv : The core vnv API and runtime. 
    - gui : The flask implementation of the VnV Graphical user interface
    - server: A simple flask based reverse proxy and html front end for SAAS style deployment
+   
+# vnv-snippets: A Related VS Code Extension:
+
+We created an extension for VS Code that enables users employ snippets for incorporating VnV macros.
+
+## vnv-snippets' Repo:
+
+https://marketplace.visualstudio.com/items?itemName=jburz2001.vnv-snippets
+
+## vnv-snippets' VS Code Marketplace Page:
+https://marketplace.visualstudio.com/items?itemName=jburz2001.vnv-snippets
 
 # License:
 
