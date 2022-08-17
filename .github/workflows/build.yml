@@ -19,10 +19,6 @@ jobs:
       - uses: actions/checkout@v3
         with:
            submodules: recursive
-
-      
-      - name: Pull down the last vnv image (should save time if no build needed)
-        run:  docker pull ghcr.io/vnvlabs/vnv:nightly 
       
       - name: Build the environment
         run: cd ${GITHUB_WORKSPACE}/env \
@@ -42,6 +38,5 @@ jobs:
       
       - name: Push the base image
         run: docker push ghcr.io/vnvlabs/vnv:nightly
-        
-        
-      
+  
+
