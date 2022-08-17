@@ -20,7 +20,6 @@ jobs:
         with:
            submodules: recursive
 
-      # Runs a single command using the runners shell
       
       - name: Pull down the last vnv image (should save time if no build needed)
         run:  docker pull ghcr.io/vnvlabs/vnv:nightly 
@@ -34,7 +33,7 @@ jobs:
              && ./docker.sh vnv_env vnv_raw
     
       - name: Add all the plugins on top       
-             cd ${GITHUB_WORKSPACE}/plugins \
+        run:  cd ${GITHUB_WORKSPACE}/plugins \
              && ./docker.sh vnv_raw vnv_base 
              
       - name: Add the GUI on top of the plugins.
