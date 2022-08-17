@@ -21,6 +21,28 @@ jobs:
            submodules: recursive
 
       # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: cd ${GITHUB_WORKSPACE} && ./release.sh nightly
-
+      
+      - name: Pull down the last vnv image (should save time if no build needed)
+        run:  docker pull ghcr.io/vnvlabs/vnv:nightly 
+      
+      - name: Build the environment
+        run: cd ${GITHUB_WORKSPACE}/env \
+             && ./docker.sh vnv_env
+             
+      - name: Build the main api docker image
+        run: cd ${GITHUB_WORKSPACE}/vnv \
+             && ./docker.sh vnv_env vnv_raw
+    
+      - name: Add all the plugins on top       
+             cd ${GITHUB_WORKSPACE}/plugins \
+             && ./docker.sh vnv_raw vnv_base 
+             
+      - name: Add the GUI on top of the plugins.
+        run: cd ${GITHUB_WORKSPACE}/gui 
+             && ./docker.sh vnv_base ghcr.io/vnvlabs/vnv:nightly
+      
+      - name: Push the base image
+        run: docker push ghcr.io/vnvlabs/vnv:nightly
+        
+        
+      
