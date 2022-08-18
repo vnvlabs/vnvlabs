@@ -3,5 +3,5 @@ ARG FROM_IMAGE=vnv_demo:latest
 FROM ${GUI_IMAGE} 
 
 ARG FROM_IMAGE
-FROM vnv_demo:latest
+FROM ${FROM_IMAGE}
 COPY --from=0 /vnv-gui /vnv-gui
