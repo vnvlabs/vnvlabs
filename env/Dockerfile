@@ -33,7 +33,6 @@ RUN apt-get -y update && apt-get -y upgrade && apt-get purge openmpi* && apt-get
     bzip2 \
     doxygen \
     swig \
-    python-dev \
     python3-dev \
     python3-pip \
     libfftw3-dev \
@@ -42,8 +41,9 @@ RUN apt-get -y update && apt-get -y upgrade && apt-get purge openmpi* && apt-get
     flex	\
     gcc\
     g++\
-    mpich\
-    libmpich-dev \
+    openmpi-bin \
+    openmpi-common \
+    libopenmpi-dev \
     gfortran\
     libboost-all-dev \
     libblas-dev \
@@ -54,40 +54,70 @@ RUN apt-get -y update && apt-get -y upgrade && apt-get purge openmpi* && apt-get
     perl \
     libmicrohttpd-dev \
     libglapi-mesa \
-    libblas64-3 \
-    && pip3 install virtualenv  \
-    && wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | apt-key add - \
-    && echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/5.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-5.0.list \
-    &&  apt-get update && apt-get install -y mongodb-server  curl wget libsecret-1-dev xz-utils \ 
-    && wget https://apt.llvm.org/llvm.sh \
-    && chmod u+x ./llvm.sh \
-    && ./llvm.sh ${llvm_version} \
-    && rm ./llvm.sh \ 
-    && apt-get install -y libclang-12-dev  \
-    && apt-get purge -y openmpi* \
-    && wget https://github.com/Kitware/CMake/releases/download/v3.21.3/cmake-3.21.3-linux-x86_64.sh \
-    && chmod u+x ./cmake-3.21.3-linux-x86_64.sh \
-    && ./cmake-3.21.3-linux-x86_64.sh --prefix=/usr --skip-license \ 
-    && rm ./cmake-3.21.3-linux-x86_64.sh \
-    && wget -O pv.tar.gz "https://www.paraview.org/paraview-downloads/download.php?submit=Download&version=v5.10&type=binary&os=Linux&downloadFile=ParaView-5.10.1-osmesa-MPI-Linux-Python3.9-x86_64.tar.gz"  \
-    && tar -xf pv.tar.gz \
-    && mv ParaView-5.10.1-osmesa-MPI-Linux-Python3.9-x86_64 ${PARAVIEW_DIR} \
-    && rm pv.tar.gz \ 
-    && mkdir ${SOFTWARE_DIR} && git clone https://github.com/ornladios/ADIOS2.git ADIOS && mkdir adios2-build && cd adios2-build \
-    && cmake -DCMAKE_INSTALL_PREFIX=${ADIOS_DIR} ../ADIOS && make -j 16 && make install && cd .. && rm -r adios2-build \
-    && rm -r ADIOS  \
-    && git clone https://bitbucket.org/icl/papi.git &&  cd papi/src && ./configure && make && make install && cd ../../ && rm -r papi \
-    && git clone https://github.com/mongodb/mongo-c-driver.git \
+    libblas64-3 && pip3 install virtualenv 
+
+
+#Install cmake
+RUN mkdir -p cmake &&\
+    cd cmake && \
+    wget https://github.com/Kitware/CMake/releases/download/v3.21.3/cmake-3.21.3-linux-x86_64.sh && \
+    chmod u+x ./cmake-3.21.3-linux-x86_64.sh &&\
+    ./cmake-3.21.3-linux-x86_64.sh --prefix=/usr --skip-license &&\
+    cd .. && rm -r ./cmake
+
+
+
+#Install llvm
+ENV LLVM_DIR=/usr/lib/llvm-${llvm_version}
+
+# -- problems with llvm 12 repo for ubuntu 22.04?
+#RUN wget https://apt.llvm.org/llvm.sh && chmod u+x ./llvm.sh && ./llvm.sh ${llvm_version} && rm ./llvm.sh && apt-get install -y libclang-${llvm_version}-dev
+
+RUN apt-get install -y clang-${llvm_version} lldb-${llvm_version} lld-${llvm_version} clangd-${llvm_version} clang-tidy-${llvm_version} clang-format-${llvm_version} clang-tools-${llvm_version} llvm-${llvm_version}-dev lld-${llvm_version} lldb-${llvm_version} llvm-${llvm_version}-tools libomp-${llvm_version}-dev libc++-${llvm_version}-dev libc++abi-${llvm_version}-dev libclang-common-${llvm_version}-dev libclang-${llvm_version}-dev libclang-cpp${llvm_version}-dev libunwind-${llvm_version}-dev
+
+
+#RUN apt-get purge -y openmpi*
+
+
+#Install adios
+ENV ADIOS_DIR=${SOFTWARE_DIR}/adios
+RUN mkdir ${SOFTWARE_DIR} && git clone https://github.com/ornladios/ADIOS2.git ADIOS && mkdir adios2-build && cd adios2-build \
+  && cmake -DCMAKE_INSTALL_PREFIX=${ADIOS_DIR} ../ADIOS && make -j 16 && make install && cd .. && rm -r adios2-build \
+  && rm -r ADIOS 
+
+
+#Install PAPI (used in the plugins)
+RUN git clone https://bitbucket.org/icl/papi.git &&  cd papi/src && ./configure && make && make install  
+
+
+# mongo db is broken in apt -- install from source.
+RUN git clone https://github.com/mongodb/mongo-c-driver.git \
     && cd mongo-c-driver \
     && git checkout 1.20.1 \
-    && python build/calc_release_version.py > VERSION_CURRENT \
+    && python3 build/calc_release_version.py > VERSION_CURRENT \
     && mkdir cmake-build \
     && cd cmake-build \
     && cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF .. \
     && cmake --build . \
-    && cmake --build . --target install \
-    && cd .. && rm -r mongo-c-driver \
-    &&ARCH= && dpkgArch="$(dpkg --print-architecture)" \
+    && cmake --build . --target install
+
+#libssl1.1 for mongo db server
+RUN echo "deb http://security.ubuntu.com/ubuntu impish-security main" | tee /etc/apt/sources.list.d/impish-security.list
+RUN apt-get update && apt-get install libssl1.1
+
+RUN wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | apt-key add -
+RUN echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/5.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-5.0.list
+
+RUN apt-get update && apt-get install -y mongodb-org-server  curl wget libsecret-1-dev xz-utils
+
+ARG NODE_VERSION=12.18.3
+ENV NODE_VERSION=$NODE_VERSION
+ENV DEBIAN_FRONTEND=noninteractive 
+ENV THEIA_DEFAULT_PLUGINS=local-dir:/home/theia/plugins
+ENV YARN_VERSION=1.22.5
+
+# Install Node.js
+RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
     && case "${dpkgArch##*-}" in \
     amd64) ARCH='x64';; \
     ppc64el) ARCH='ppc64le';; \
