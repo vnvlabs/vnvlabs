@@ -123,6 +123,7 @@
         "cdt-gdb-vscode": "https://open-vsx.org/api/eclipse-cdt/cdt-gdb-vscode/0.0.92/file/eclipse-cdt.cdt-gdb-vscode-0.0.92.vsix",
         "vscode-clangd": "https://open-vsx.org/api/llvm-vs-code-extensions/vscode-clangd/0.1.7/file/llvm-vs-code-extensions.vscode-clangd-0.1.7.vsix",
         "vscode-builtin-yaml": "https://github.com/theia-ide/vscode-builtin-extensions/releases/download/v1.39.1-prel/yaml-1.39.1-prel.vsix",
-        "plantuml": "https://open-vsx.org/api/jebbs/plantuml/2.14.0/file/jebbs.plantuml-2.14.0.vsix"
+        "plantuml": "https://open-vsx.org/api/jebbs/plantuml/2.14.0/file/jebbs.plantuml-2.14.0.vsix",
+        "vnv-snippets": "https://www.open-vsx.org/api/jburz2001/vnv-snippets/0.0.1/file/jburz2001.vnv-snippets-0.0.1.vsix" 
     }
 }

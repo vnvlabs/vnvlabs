@@ -1,0 +1,42 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Nightly Build and Release
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "master" branch
+  schedule:
+    - cron: '0 2 * * *' # run at 2 AM UTC
+  
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+        with:
+           submodules: recursive
+      
+      - name: Build the environment
+        run: cd ${GITHUB_WORKSPACE}/env \
+             && ./docker.sh vnv_env
+             
+      - name: Build the main api docker image
+        run: cd ${GITHUB_WORKSPACE}/vnv \
+             && ./docker.sh vnv_env vnv_raw
+    
+      - name: Add all the plugins on top       
+        run:  cd ${GITHUB_WORKSPACE}/plugins \
+             && ./docker.sh vnv_raw vnv_base 
+             
+      - name: Add the GUI on top of the plugins.
+        run: cd ${GITHUB_WORKSPACE}/gui 
+             && ./docker.sh vnv_base ghcr.io/vnvlabs/vnv:nightly
+      
+      - name: Push the base image
+        run: docker push ghcr.io/vnvlabs/vnv:nightly
+  
+

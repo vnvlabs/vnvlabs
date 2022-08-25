@@ -13,7 +13,7 @@ heat_pid=$!
 docker build -f simple/docker/Dockerfile -t vnv_simple --build-arg FROM_IMAGE=$1 simple &
 simple_pid=$!
 
-#miniamr
+##miniamr
 docker build -f miniamr/docker/Dockerfile -t vnv_miniamr --build-arg FROM_IMAGE=$1 miniamr &
 miniamr_pid=$!
 

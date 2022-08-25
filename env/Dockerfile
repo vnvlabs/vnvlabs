@@ -4,15 +4,26 @@
 FROM ubuntu:latest
 
 ARG DEBIAN_FRONTEND=noninteractive
+ARG NODE_VERSION=12.18.3
+
 ENV llvm_version=12
 ENV TZ=America/New_York
-ENV SOURCE_DIR=/source
-ENV SOFTWARE_DIR=/software
+ENV SOURCE_DIR=/home/user/source
+ENV SOFTWARE_DIR=/home/user/software
+ENV ADIOS_DIR=${SOFTWARE_DIR}/adios
+ENV NODE_VERSION=$NODE_VERSION
+ENV DEBIAN_FRONTEND=noninteractive 
+ENV THEIA_DEFAULT_PLUGINS=local-dir:/theia/plugins
+ENV YARN_VERSION=1.22.5
+ENV PARAVIEW_DIR=/paraview 
+ENV PVPYTHON=${PARAVIEW_DIR}/bin/pvpython 
+ENV LLVM_DIR=/usr/lib/llvm-${llvm_version}
 
 
 RUN apt-get -y update && apt-get -y upgrade && apt-get purge openmpi* && apt-get -y install \
     build-essential \
     wget \
+    vim \
     git \
     snap \
     lsb-release \
@@ -119,22 +130,19 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
     && curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-$ARCH.tar.xz" \
     && tar -xJf "node-v$NODE_VERSION-linux-$ARCH.tar.xz" -C /usr/local --strip-components=1 --no-same-owner \
     && rm "node-v$NODE_VERSION-linux-$ARCH.tar.xz" \
-    && ln -s /usr/local/bin/node /usr/local/bin/nodejs
-
-# Install Yarn
-RUN curl -fSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
+    && ln -s /usr/local/bin/node /usr/local/bin/nodejs \
+    &&  curl -fSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
     && mkdir -p /opt/yarn \
     && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/yarn --strip-components=1 \
     && ln -s /opt/yarn/bin/yarn /usr/local/bin/yarn \
     && ln -s /opt/yarn/bin/yarn /usr/local/bin/yarnpkg \
     && rm yarn-v$YARN_VERSION.tar.gz
 
-#Copy theia config
-WORKDIR /theia
-COPY theia.package.json package.json
 
-# Build Theia
-RUN yarn --pure-lockfile && \
+#Copy theia config Leave this seperate so we can cache that god awfull thing above. 
+COPY theia.package.json /theia/package.json
+RUN cd /theia && mkdir plugins \
+    && yarn --pure-lockfile && \
     NODE_OPTIONS="--max_old_space_size=4096" yarn theia build && \
     yarn theia download:plugins && \
     yarn --production && \
@@ -145,28 +153,5 @@ RUN yarn --pure-lockfile && \
     yarn autoclean --force && \
     yarn cache clean 
 
-WORKDIR /
 
-#Install Pavaview server (used for visualization) 
-RUN wget -O pv.tar.gz "https://www.paraview.org/paraview-downloads/download.php?submit=Download&version=v5.10&type=binary&os=Linux&downloadFile=ParaView-5.10.1-osmesa-MPI-Linux-Python3.9-x86_64.tar.gz"   
-RUN tar -xf pv.tar.gz && mv ParaView-5.10.1-osmesa-MPI-Linux-Python3.9-x86_64 paraview && rm pv.tar.gz 
 
-ENV PARAVIEW_DIR=/paraview 
-ENV PVPYTHON=${PARAVIEW_DIR}/bin/pvpython 
-
-#Install vim for text editing. 
-RUN apt-get install -y vim 
-
-#Install Dakota
-#RUN wget https://dakota.sandia.gov/sites/default/files/distributions/public/dakota-6.14.0-release-public-src-cli.tar.gz
-#RUN tar -xf dakota-6.14.0-release-public-src-cli.tar.gz
-#RUN apt-get install
-#RUN cd dakota-6.14.0.src/ && mkdir build && cd build && cmake \
-#  -D CMAKE_C_FLAGS="-O2"\
-#  -D CMAKE_CXX_FLAGS="-O2"\
-#  -D CMAKE_Fortran_FLAGS="-O2"\
-#  -D DAKOTA_HAVE_GSL:BOOL=TRUE\
-#  -D HAVE_QUESO:BOOL=TRUE\
-#  -D DAKOTA_HAVE_MPI:BOOL=TRUE \
-#  -D DAKOTA_HDF5:BOOL=TRUE\
-#  -DBoost_NO_BOOST_CMAKE:BOOL=TRUE .. && make && make install
