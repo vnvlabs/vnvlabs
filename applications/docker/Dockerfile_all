@@ -1,41 +1,42 @@
 
-FROM vnv_asgard:latest as asgard
+ARG VERSION=latest
+FROM vnv_asgard:${VERSION} as asgard
 
-FROM vnv_heat:latest as heat
+FROM vnv_heat:${VERSION} as heat
 
-FROM vnv_mfem:latest as mfem 
+FROM vnv_mfem:${VERSION} as mfem 
 
-FROM vnv_miniamr:latest as miniamr
+FROM vnv_miniamr:${VERSION} as miniamr
 
-FROM vnv_simple:latest as simple
+FROM vnv_simple:${VERSION} as simple
 
-FROM vnv_swfft:latest as swfft
+FROM vnv_swfft:${VERSION} as swfft
 
-FROM vnv_xs_bench:latest as xsbench
+FROM vnv_xs_bench:${VERSION} as xsbench
 
 # Moose has vnv-hypre-petsc-libmesh-moose all installed already. 
-FROM vnv_moose:latest as moose
+FROM vnv_moose:${VERSION} as moose
 
-COPY --from=asgard /source/asgard /source/asgard
+COPY --from=asgard ${SOURCE_DIR}/asgard ${SOURCE_DIR}/asgard
 ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/asgard/build/vnv.__registration__
 
-COPY --from=heat /source/heat /source/heat
+COPY --from=heat ${SOURCE_DIR}/heat ${SOURCE_DIR}/heat
 ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/heat/build/vnv.__registration__
 
-COPY --from=mfem /source/mfem /source/mfem
-COPY --from=mfem /software/mfem /software/mfem
+COPY --from=mfem ${SOURCE_DIR}/mfem ${SOURCE_DIR}/mfem
+COPY --from=mfem ${SOFTWARE_DIR}/mfem ${SOFTWARE_DIR}/mfem
 ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/mfem/docker_build/vnv.__registration__
 
-COPY --from=miniamr /source/miniAMR /source/miniAMR
+COPY --from=miniamr ${SOURCE_DIR}/miniAMR ${SOURCE_DIR}/miniAMR
 ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/swfft/build/vnv.__registration__
 
-COPY --from=simple /source/simple /source/simple
+COPY --from=simple ${SOURCE_DIR}/simple ${SOURCE_DIR}/simple
 ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/simple/build/vnv.__registration__
 
-COPY --from=swfft /source/swfft /source/swfft
+COPY --from=swfft ${SOURCE_DIR}/swfft ${SOURCE_DIR}/swfft
 ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/swfft/build/vnv.__registration__
 
-COPY --from=xsbench /source/xs-bench /source/xs-bench
+COPY --from=xsbench ${SOURCE_DIR}/xs-bench ${SOURCE_DIR}/xs-bench
 ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/xs-bench/vnv.__registration__
 
 COPY all_config /config

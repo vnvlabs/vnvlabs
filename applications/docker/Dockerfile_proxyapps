@@ -1,12 +1,13 @@
-FROM vnv_swfft:latest as vnv_swfft
+ARG VERSION=latest
+FROM vnv_swfft:${VERSION} as swfft
 RUN echo $VNV_CONFIG 
 
-FROM vnv_miniamr:latest as miniamr
+FROM vnv_miniamr:${VERSION} as miniamr
 RUN echo $VNV_CONFIG 
 
-FROM vnv_xs_bench:latest as xsbench
-COPY --from=vnv_swfft /source/swfft /source/swfft
-COPY --from=miniamr /source/miniAMR /source/miniAMR
+FROM vnv_xs_bench:${VERSION} as xsbench
+COPY --from=swfft ${SOURCE_DIR}/swfft ${SOURCE_DIR}/swfft
+COPY --from=miniamr ${SOURCE_DIR}/miniAMR ${SOURCE_DIR}/miniAMR
 
 COPY proxy_config /config
 ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/swfft/build/vnv.__registration__:

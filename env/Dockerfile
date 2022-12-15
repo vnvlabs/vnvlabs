@@ -1,17 +1,15 @@
 
 
 
-FROM ubuntu:latest
+FROM ubuntu:20.04
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG NODE_VERSION=12.18.3
 
 ENV llvm_version=12
 ENV TZ=America/New_York
 ENV SOURCE_DIR=/home/user/source
 ENV SOFTWARE_DIR=/home/user/software
 ENV ADIOS_DIR=${SOFTWARE_DIR}/adios
-ENV NODE_VERSION=$NODE_VERSION
 ENV DEBIAN_FRONTEND=noninteractive 
 ENV THEIA_DEFAULT_PLUGINS=local-dir:/theia/plugins
 ENV YARN_VERSION=1.22.5
@@ -41,9 +39,8 @@ RUN apt-get -y update && apt-get -y upgrade && apt-get purge openmpi* && apt-get
     flex	\
     gcc\
     g++\
-    openmpi-bin \
-    openmpi-common \
-    libopenmpi-dev \
+    mpich \
+    libmpich-dev \
     gfortran\
     libboost-all-dev \
     libblas-dev \
@@ -54,7 +51,8 @@ RUN apt-get -y update && apt-get -y upgrade && apt-get purge openmpi* && apt-get
     perl \
     libmicrohttpd-dev \
     libglapi-mesa \
-    libblas64-3 && pip3 install virtualenv 
+    gdb \
+    libblas64-3 && pip3 install virtualenv  
 
 
 #Install cmake
@@ -71,17 +69,13 @@ RUN mkdir -p cmake &&\
 ENV LLVM_DIR=/usr/lib/llvm-${llvm_version}
 
 # -- problems with llvm 12 repo for ubuntu 22.04?
-#RUN wget https://apt.llvm.org/llvm.sh && chmod u+x ./llvm.sh && ./llvm.sh ${llvm_version} && rm ./llvm.sh && apt-get install -y libclang-${llvm_version}-dev
+RUN wget https://apt.llvm.org/llvm.sh && chmod u+x ./llvm.sh && ./llvm.sh ${llvm_version} && rm ./llvm.sh && apt-get install -y libclang-${llvm_version}-dev
 
-RUN apt-get install -y clang-${llvm_version} lldb-${llvm_version} lld-${llvm_version} clangd-${llvm_version} clang-tidy-${llvm_version} clang-format-${llvm_version} clang-tools-${llvm_version} llvm-${llvm_version}-dev lld-${llvm_version} lldb-${llvm_version} llvm-${llvm_version}-tools libomp-${llvm_version}-dev libc++-${llvm_version}-dev libc++abi-${llvm_version}-dev libclang-common-${llvm_version}-dev libclang-${llvm_version}-dev libclang-cpp${llvm_version}-dev libunwind-${llvm_version}-dev
-
-
-#RUN apt-get purge -y openmpi*
-
+RUN apt-get purge -y openmpi*
 
 #Install adios
 ENV ADIOS_DIR=${SOFTWARE_DIR}/adios
-RUN mkdir ${SOFTWARE_DIR} && git clone https://github.com/ornladios/ADIOS2.git ADIOS && mkdir adios2-build && cd adios2-build \
+RUN mkdir -p ${SOFTWARE_DIR} && git clone https://github.com/ornladios/ADIOS2.git ADIOS && mkdir adios2-build && cd adios2-build \
   && cmake -DCMAKE_INSTALL_PREFIX=${ADIOS_DIR} ../ADIOS && make -j 16 && make install && cd .. && rm -r adios2-build \
   && rm -r ADIOS 
 
@@ -101,21 +95,20 @@ RUN git clone https://github.com/mongodb/mongo-c-driver.git \
     && cmake --build . \
     && cmake --build . --target install
 
-#libssl1.1 for mongo db server
-RUN echo "deb http://security.ubuntu.com/ubuntu impish-security main" | tee /etc/apt/sources.list.d/impish-security.list
-RUN apt-get update && apt-get install libssl1.1
+RUN apt-get install -y curl
 
-RUN wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | apt-key add -
-RUN echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/5.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-5.0.list
+#RUN wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | apt-key add -
+RUN wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | apt-key add -
+RUN echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+RUN apt-get update && apt-get install -y curl mongodb-org
 
-RUN apt-get update && apt-get install -y mongodb-org-server  curl wget libsecret-1-dev xz-utils
-
-ARG NODE_VERSION=12.18.3
+ARG NODE_VERSION=18.12.1
 ENV NODE_VERSION=$NODE_VERSION
 ENV DEBIAN_FRONTEND=noninteractive 
 ENV THEIA_DEFAULT_PLUGINS=local-dir:/home/theia/plugins
 ENV YARN_VERSION=1.22.5
 
+RUN apt-get install -y curl pkg-config libsecret-1-dev
 # Install Node.js
 RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
     && case "${dpkgArch##*-}" in \
@@ -152,6 +145,4 @@ RUN cd /theia && mkdir plugins \
     echo *.spec.* >> .yarnclean && \
     yarn autoclean --force && \
     yarn cache clean 
-
-
 

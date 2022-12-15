@@ -12,15 +12,15 @@ do
   
   docker build -t ${REPO_OWNER}/${package}:${REON} \
                --label vnvcommit="$GITHASHNUM" \
-	       --build-arg FROM_IMAGE=vnv_${package}:latest \
-	       --build-arg GUI_IMAGE=vnv_gui:latest . 
+	       --build-arg FROM_IMAGE=vnv_${package}:${REON} \
+	       --build-arg GUI_IMAGE=vnv_gui:${REON} . 
 
 done
 
 ### Retag all the non vnv images . 
-for package in dockerm serve 
+for package in dockerm 
 do
-  echo "FROM vnv_${package}:latest" | docker build --label vnvcommit="$GITHASHNUM" -t "${REPO_OWNER}/${package}:${REON}" -
+  echo "FROM vnv_${package}:${REON}" | docker build --label vnvcommit="$GITHASHNUM" -t "${REPO_OWNER}/${package}:${REON}" -
 done  
 
 
