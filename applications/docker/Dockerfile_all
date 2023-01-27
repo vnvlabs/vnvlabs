@@ -1,21 +1,23 @@
 
 ARG VERSION=latest
-FROM vnv_asgard:${VERSION} as asgard
+ARG REPO=ghcr.io/vnvlabs
 
-FROM vnv_heat:${VERSION} as heat
+FROM ${REPO}/asgard:${VERSION} as asgard
 
-FROM vnv_mfem:${VERSION} as mfem 
+FROM ${REPO}/heat:${VERSION} as heat
 
-FROM vnv_miniamr:${VERSION} as miniamr
+FROM ${REPO}/mfem:${VERSION} as mfem 
 
-FROM vnv_simple:${VERSION} as simple
+FROM ${REPO}/miniamr:${VERSION} as miniamr
 
-FROM vnv_swfft:${VERSION} as swfft
+FROM ${REPO}/simple:${VERSION} as simple
 
-FROM vnv_xs_bench:${VERSION} as xsbench
+FROM ${REPO}/swfft:${VERSION} as swfft
+
+FROM ${REPO}/xs_bench:${VERSION} as xsbench
 
 # Moose has vnv-hypre-petsc-libmesh-moose all installed already. 
-FROM vnv_moose:${VERSION} as moose
+FROM ${REPO}/moose:${VERSION} as moose
 
 COPY --from=asgard ${SOURCE_DIR}/asgard ${SOURCE_DIR}/asgard
 ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/asgard/build/vnv.__registration__

@@ -1,11 +1,14 @@
 ARG VERSION=latest
-FROM vnv_swfft:${VERSION} as swfft
+ARG REPO=ghcr.io/vnvlabs
+
+
+FROM ${REPO}/swfft:${VERSION} as swfft
 RUN echo $VNV_CONFIG 
 
-FROM vnv_miniamr:${VERSION} as miniamr
+FROM ${REPO}/miniamr:${VERSION} as miniamr
 RUN echo $VNV_CONFIG 
 
-FROM vnv_xs_bench:${VERSION} as xsbench
+FROM ${REPO}/xs_bench:${VERSION} as xsbench
 COPY --from=swfft ${SOURCE_DIR}/swfft ${SOURCE_DIR}/swfft
 COPY --from=miniamr ${SOURCE_DIR}/miniAMR ${SOURCE_DIR}/miniAMR
 
