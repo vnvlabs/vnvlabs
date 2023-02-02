@@ -14,7 +14,7 @@ FROM ${REPO}/simple:${VERSION} as simple
 
 FROM ${REPO}/swfft:${VERSION} as swfft
 
-FROM ${REPO}/xs_bench:${VERSION} as xsbench
+FROM ${REPO}/xsbench:${VERSION} as xsbench
 
 # Moose has vnv-hypre-petsc-libmesh-moose all installed already. 
 FROM ${REPO}/moose:${VERSION} as moose

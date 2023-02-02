@@ -1,7 +1,7 @@
 
 
-REPO_OWNER=$1
-REON=$2
+REPO_OWNER=$2
+REON=$3
 
 #Build asgard 
 docker build -f asgard/docker/Dockerfile -t ${REPO_OWNER}/asgard:${REON} --build-arg FROM_IMAGE=$1 asgard  &

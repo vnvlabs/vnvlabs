@@ -13,6 +13,7 @@ cd vnv
 ./docker.sh ${REPO_OWNER}/env:${REON}  ${REPO_OWNER}/raw:${REON} 
 cd .. 
 
+
 cd plugins 
 
 #./docker.sh <base image to build from> <tag>
