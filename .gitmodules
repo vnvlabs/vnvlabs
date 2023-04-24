@@ -4,9 +4,6 @@
 [submodule "gui"]
 	path = gui
 	url = git@github.com:vnvlabs/gui.git
-[submodule "server"]
-	path = server
-	url = git@github.com:vnvlabs/server.git
 [submodule "applications/xsbench"]
 	path = applications/xsbench
 	url = git@github.com:vnvlabs/xsbench.git
