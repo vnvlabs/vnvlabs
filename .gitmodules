@@ -40,9 +40,6 @@
 [submodule "plugins/quantify"]
 	path = plugins/quantify
 	url = git@github.com:vnvlabs/quantify.git
-[submodule "deploy"]
-	path = deploy
-	url = git@github.com:vnvlabs/deploy.git
 [submodule "applications/moose"]
 	path = applications/moose
 	url = git@github.com:vnvlabs/moose.git
