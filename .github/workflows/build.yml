@@ -19,8 +19,11 @@ jobs:
       - uses: actions/checkout@v3
         with:
            submodules: recursive
-      
+           fetch_depth: 0
+      - name: Get new commits
+        run: echo "NEW_COMMIT_COUNT=$(git log --oneline --since '24 hours ago' | wc -l)" >> $GITHUB_ENV
       - name: Build And Release
-        run: cd ${GITHUB_WORKSPACE} && ./release.sh nightly
+        if: ${{ env.NEW_COMMIT_COUNT > 0 }}
+        run: ./docker.sh nightly
                
 
