@@ -6,19 +6,20 @@ set -e
 
 #Build the environment required to run all the applications
 cd env 
-./docker.sh ${REPO_OWNER}/env:${REON} 
+docker build -f Dockerfile -t ${REPO_OWNER}/env:${REON} 
 cd ..
 
 #Build the vnv toolkit library
 cd vnv 
-./docker.sh ${REPO_OWNER}/env:${REON}  ${REPO_OWNER}/raw:${REON} 
+docker build -f docker/Dockerfile --build-arg FROM_IMAGE=${REPO_OWNER}/env:${REON} -t ${REPO_OWNER}/raw:${REON} 
 cd .. 
 
-#Add the gui to the image. This builds a heavy gui on top of the vnv image, and a light image
-#on top of ubuntu:20.04
+
+#Build the gui top of ubuntu and on top of the vnv image. 
+
 cd gui 
-#./docker.sh <tag>
-./docker.sh ${REPO_OWNER}/heavy_gui:${REON} ${REPO_OWNER}/raw:${REON} ${REPO_OWNER}/gui:${REON}
+docker build -f docker/Dockerfile -t ${REPO_OWNER}/heavy_gui:${REON} --build-arg FROM_IMAGE=${REPO_OWNER}/raw:${REON} .
+docker build -f docker/Dockerfile -t ${REPO_OWNER}/gui:${REON} .
 cd ..
 
 #Add all of the plugins
@@ -28,7 +29,6 @@ cd ..
 
 #Build all of the applications. 
 cd applications 
-#./docker.sh <base image to build from> <repo name> <version>
 ./docker.sh ${REPO_OWNER}/base:${REON} ${REPO_OWNER} ${REON} 
 cd .. 
 
