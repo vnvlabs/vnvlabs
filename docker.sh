@@ -1,8 +1,11 @@
 
+#!/bin/bash
+set -e 
+set -o pipefail
+
 REPO_OWNER=ghcr.io/vnvlabs
 REON=$1
 
-set -e
 
 #Build the environment required to run all the applications
 cd env 
