@@ -95,7 +95,7 @@ def file_needs_rebuild(path, reponame, tag=REFTAG, repo=REPO_OWNER, from_image=N
 
     REBUILD_INFO[reponame] = [REBUILD,REBUILD_SHA]
     
-    if ACTUALLY_BUILD and "demo" in REBUILD_INFO:
+    if ACTUALLY_BUILD:
       if REBUILD:
         print("Building: ", f"{repo_name(reponame,repo=repo)}:{otag}")
 
@@ -135,7 +135,7 @@ def repo_needs_rebuild(path, reponame, tag=REFTAG, repo=REPO_OWNER, from_image=N
 
     REBUILD_INFO[reponame] = [REBUILD,REBUILD_SHA]
 
-    if ACTUALLY_BUILD and "demo" in REBUILD_INFO:
+    if ACTUALLY_BUILD:
       if REBUILD:
         print("Building ", f"{repo_name(reponame,repo=repo)}:{otag}")
         if from_image is not None:
