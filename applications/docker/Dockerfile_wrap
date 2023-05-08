@@ -1,0 +1,33 @@
+
+
+ARG FROM_IMAGE=ubuntu:20.04
+ARG GUI_IMAGE=ghcr.io/vnvlabs/gui:v1.0
+ARG PLUGIN_IMAGE=ghrc.io/vnvlabs/performance:v1.0
+
+FROM ${GUI_IMAGE}
+
+FROM ${PLUGIN_IMAGE}
+
+FROM ${FROM_IMAGE}
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=America/New_York
+ENV THEIA_DEFAULT_PLUGINS=local-dir:/vnvgui/theia/plugins
+ENV PARAVIEW_DIR=/vnvgui/paraview 
+ENV PVPYTHON=${PARAVIEW_DIR}/bin/pvpython 
+ENV PATH=/vnvgui/node/bin/:$PATH 
+ENV DOWNLOAD_PARAVIEW=1
+
+COPY --from=0 /vnvgui/node /vnvgui/node
+COPY --from=0 /vnvgui/theia /vnvgui/theia
+COPY --from=0 /vnvgui/gui /vnvgui/gui
+COPY --from=0 /vnvgui/paraview /vnvgui/paraview 
+COPY --from=1 ${SOFTWARE_DIR}/plugins ${SOFTWARE_DIR}/plugins
+ENV VNV_CONFIG=${VNV_CONFIG}:${SOFTWARE_DIR}/plugins/vnv.__registration__
+
+
+LABEL VNV_GUI_EQUIPT=1
+WORKDIR /vnvgui/gui
+ENTRYPOINT ["./launch.sh"]
+
+

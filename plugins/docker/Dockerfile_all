@@ -1,0 +1,5 @@
+
+ARG VERSION=latest
+ARG REPO=ghcr.io/vnvlabs
+
+FROM ${REPO}/performance:${VERSION} as performance

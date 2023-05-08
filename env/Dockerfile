@@ -47,8 +47,9 @@ RUN apt-get -y update && apt-get -y upgrade && apt-get purge openmpi* && apt-get
     libglapi-mesa \
     gdb \
     valgrind \
+    pkg-config \
+    libsecret-1-dev \
     libblas64-3 && pip3 install virtualenv  
-
 
 #Install cmake
 RUN mkdir -p cmake &&\
