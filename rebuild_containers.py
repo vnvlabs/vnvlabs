@@ -14,7 +14,9 @@ parser.add_argument('--repo_owner', type=str, help='The owner of the container r
 parser.add_argument('--tag', type=str, help='The version or branch of code to use', default='nightly')
 parser.add_argument('--ref_tag', type=str, help='The reference tag', default='nightly')
 parser.add_argument('--full_rebuild', action='store_true', help='Whether to perform a full rebuild')
-parser.add_argument('--actually_build', action='store_true', help='Whether to actually build the image')
+parser.add_argument('--actually_build', action='store_false', help='Whether to actually build the image')
+parser.add_argument('--cache_from_nightly', action='store_false', help='Whether to use nightly cache to build')
+parser.add_argument('--push', action='store_true', help='Push at end')
 
 # Parse the arguments
 args = parser.parse_args()
@@ -25,6 +27,8 @@ TAG = args.tag
 REFTAG = args.ref_tag
 FULLREBUILD = args.full_rebuild
 ACTUALLY_BUILD = args.actually_build
+CACHE_FROM_NIGHTLY = args.cache_from_nightly
+PUSH_TO_GHCR = args.push
 
 REBUILD_INFO = {}
 docker_client = docker.from_env()
@@ -58,14 +62,27 @@ def pull_image(image, tag=TAG):
     except Exception as e:
         return None
 
+def push_image(image, tag=TAG):
+    try:
+        docker_client.images.push(image, tag=tag)
+    except Exception as e:
+        return None
 
-def build_image(build_context, dockerfile_rel_bc, repo_and_tag, build_args, labels):
+def build_image(build_context, dockerfile_rel_bc, cache_from, repo_and_tag, build_args, labels):
+    
+    for c in cache_from:
+        a = c.split(":")
+        pull_image(a[0],tag=a[1])
+
+
     generator = docker_client.api.build(path=build_context,
                             dockerfile=dockerfile_rel_bc,
                             tag=repo_and_tag,
                             buildargs=build_args,
                             decode=True,
                             labels=labels)
+
+    success = False
     while True:
         try:
             output = generator.__next__()
@@ -73,49 +90,78 @@ def build_image(build_context, dockerfile_rel_bc, repo_and_tag, build_args, labe
                 print(output['stream'].strip())
             elif "error" in output:
                 print(output["error"])
-                exit(1)
+                success = False
+                break
         except StopIteration:
+            success = True
             print("Docker image build complete.")
             break
         except ValueError:
             print("Error parsing output from docker image build: %s" % output)
+            success = False
 
+    return success
 
-def file_needs_rebuild(path, reponame, tag=REFTAG, repo=REPO_OWNER, from_image=None, otag=TAG, build_args={}, dependencies=[]):
+def file_needs_rebuild(path, reponame, tag=REFTAG, repo=REPO_OWNER, from_image=None, otag=TAG, ftag=TAG, build_args={}, dependencies=[]):
     #Step 1a Check if we need to build env
     REBUILD = True
     REBUILD_SHA = sha256sum(path)
     if FULLREBUILD is False:
        if from_image is None or REBUILD_INFO[from_image][0] is False:
          if True not in [REBUILD_INFO[a][0] for a in dependencies]:  # And none of the other deps were modified
-           image = pull_image(repo_name(reponame,repo=repo), tag=tag)
+           image = pull_image(repo_name(reponame,repo=repo), tag=otag)
            if image is not None and "vnvsha" in image.labels:
               if image.labels["vnvsha"] == REBUILD_SHA:
                 REBUILD = False
 
-    REBUILD_INFO[reponame] = [REBUILD,REBUILD_SHA]
-    
+    rname = reponame
+    if reponame in REBUILD_INFO:
+        rname = "f" + reponame
+
+
+    REBUILD_INFO[rname] = [REBUILD,REBUILD_SHA]
+
+
+
     if ACTUALLY_BUILD:
+
+      if from_image is not None and REBUILD_INFO[from_image][2] is False:
+          print("Skipping Build because from_image failed")
+          REBUILD_INFO[rname].append(False)
+          return
+
+      for i in dependencies:
+            if REBUILD_INFO[i][2] is False:
+                print("Skipping build because dependency ", i, " failed")
+                REBUILD_INFO[rname].append(False)
+                return
+
       if REBUILD:
+
         print("Building: ", f"{repo_name(reponame,repo=repo)}:{otag}")
 
-        if from_image is not None:
-            build_args["FROM_IMAGE"] = f"{repo_name(from_image,repo=repo)}:{otag}"
 
-        build_image(
+        if from_image is not None:
+            build_args["FROM_IMAGE"] = f"{repo_name(from_image,repo=repo)}:{ftag}"
+
+        REBUILD_INFO[rname].append(build_image(
             build_context=os.path.dirname(path),
             dockerfile_rel_bc=os.path.basename(path),
             build_args = build_args,
+            cache_from = [] if not CACHE_FROM_NIGHTLY else [f"{repo_name(reponame,repo=repo)}:{tag}"],
             repo_and_tag=f"{repo_name(reponame,repo=repo)}:{otag}",
             labels={"vnvsha":REBUILD_SHA}
-        )
+        ))
+
       else:
         print("Skipping Build and Tagging: ", f"{repo_name(reponame,repo=repo)}:{otag}")
-        rname= f"{repo_name(reponame, repo=repo)}:{tag}"
-        docker_client.api.tag(image=rname, repository=repo_name(reponame,repo=repo), tag=otag)
+        rname1= f"{repo_name(reponame, repo=repo)}:{tag}"
+        docker_client.api.tag(image=rname1, repository=repo_name(reponame,repo=repo), tag=otag)
+        REBUILD_INFO[rname].append(True)
+    else:
+        REBUILD_INFO[rname].append(True)
 
-
-def repo_needs_rebuild(path, reponame, tag=REFTAG, repo=REPO_OWNER, from_image=None, dockerfile="docker/Dockerfile", otag=TAG, build_args ={}, dependencies=[]):
+def repo_needs_rebuild(path, reponame, tag=REFTAG, repo=REPO_OWNER, from_image=None, dockerfile="docker/Dockerfile", otag=TAG, ftag=TAG, build_args ={}, dependencies=[]):
     #Step 3: Check if we need to rebuild the gui
     REBUILD = True
     REBUILD_SHA = get_git_revision_hash(os.path.abspath(path))
@@ -125,7 +171,7 @@ def repo_needs_rebuild(path, reponame, tag=REFTAG, repo=REPO_OWNER, from_image=N
      if FULLREBUILD is False: #If we didnt request a full rebuild
        if from_image is None or REBUILD_INFO[from_image][0] is False: #and the from_image was not modified
           if True not in [ REBUILD_INFO[a][0] for a in dependencies ]: #And none of the other deps were modified
-            nightly = pull_image(repo_name(reponame,repo=repo), tag=tag) 
+            nightly = pull_image(repo_name(reponame,repo=repo), tag=tag)
             if nightly is not None and "vnvsha" in nightly.labels: #If the docker file has not been modified
               if nightly.labels["vnvsha"] == REBUILD_SHA:
                 REBUILD=False #then we dont need to rebuild cause all of the deps have not changed. 
@@ -133,25 +179,47 @@ def repo_needs_rebuild(path, reponame, tag=REFTAG, repo=REPO_OWNER, from_image=N
         print("Building because error ",e)
         pass
 
-    REBUILD_INFO[reponame] = [REBUILD,REBUILD_SHA]
+    rname = reponame
+    if reponame in REBUILD_INFO:
+        rname = "f" + reponame
+
+    REBUILD_INFO[rname] = [REBUILD, REBUILD_SHA]
 
     if ACTUALLY_BUILD:
+
+      if from_image is not None and REBUILD_INFO[from_image][2] is False:
+          print("Skipping Build because from_image failed")
+          REBUILD_INFO[rname].append(False)
+          return
+
+      for i in dependencies:
+            if REBUILD_INFO[i][2] is False:
+                print("Skipping build because dependency ", i, " failed")
+                REBUILD_INFO[rname].append(False)
+                return
+
       if REBUILD:
         print("Building ", f"{repo_name(reponame,repo=repo)}:{otag}")
         if from_image is not None:
-            build_args["FROM_IMAGE"] = f"{repo_name(from_image,repo=repo)}:{otag}"
+            build_args["FROM_IMAGE"] = f"{repo_name(from_image,repo=repo)}:{ftag}"
+        
 
-        build_image(
+
+        REBUILD_INFO[rname].append(build_image(
             build_context=path,
             dockerfile_rel_bc=dockerfile,
             build_args = build_args,
+            cache_from = [] if not CACHE_FROM_NIGHTLY else [f"{repo_name(reponame,repo=repo)}:{tag}"],
             repo_and_tag=f"{repo_name(reponame,repo=repo)}:{otag}",
             labels={"vnvsha":REBUILD_SHA}
-        )
+        ))
       else:
         print("Skipping Build and Tagging: ", f"{repo_name(reponame,repo=repo)}:{otag}")
-        rname = f"{repo_name(reponame, repo=repo)}:{tag}"
-        docker_client.api.tag(image=rname, repository=repo_name(reponame, repo=repo), tag=otag)
+        rname1 = f"{repo_name(reponame, repo=repo)}:{tag}"
+        docker_client.api.tag(image=rname1, repository=repo_name(reponame, repo=repo), tag=otag)
+        REBUILD_INFO[rname].append(True)
+    else:
+        REBUILD_INFO[rname].append(True)
 
 #Step 1a Check if we need to build env
 file_needs_rebuild("env/Dockerfile", "env")
@@ -178,14 +246,27 @@ file_needs_rebuild("applications/docker/Dockerfile_all", "all", dependencies=["d
 file_needs_rebuild("plugins/docker/Dockerfile_all", "plugins", dependencies=["performance"], build_args=build_args)
 
 #Now, we wrap every package with the gui and the plugins. 
-for package in ["vnv", "plugins","asgard","heat","simple","miniamr","swfft","xsbench","hypre","petsc","libmesh","mfem","moose", "all","demo","proxyapps"]:
+for package in ["vnv", "performance", "plugins","asgard","heat","simple","miniamr","swfft","xsbench","hypre","petsc","libmesh","mfem","moose", "all","demo","proxyapps"]:
 
     build_args = {
         "GUI_IMAGE" : f"{REPO_OWNER}/gui:{TAG}",
         "PLUGIN_IMAGE" : f"{REPO_OWNER}/plugins:{TAG}"
     }
-    file_needs_rebuild("applications/docker/Dockerfile_wrap", f"{package}_full", build_args=build_args,from_image=package, dependencies=["gui","performance"])
+    file_needs_rebuild("applications/docker/Dockerfile_wrap", f"{package}", tag=f"f{REFTAG}", otag=f"f{TAG}", build_args=build_args,from_image=package, dependencies=["gui","performance"])
+
+    if PUSH_TO_GHCR:
+        push_image(f"{REPO_OWNER}/{package}",tag=TAG)
+        push_image(f"{REPO_OWNER}/{package}",tag=f"f{TAG}")
+
+if PUSH_TO_GHCR:
+    push_image(f"{REPO_OWNER}/env",tag=TAG)
+    push_image(f"{REPO_OWNER}/gui", tag=TAG)
 
 
+result = 0
+print(REBUILD_INFO)
+for key, value in REBUILD_INFO.items():
+    if value[2] is False:
+        result += 1
 
-
+exit(result)
