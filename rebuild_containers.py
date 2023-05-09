@@ -174,8 +174,9 @@ def repo_needs_rebuild(path, reponame, tag=REFTAG, repo=REPO_OWNER, from_image=N
     #Step 3: Check if we need to rebuild the gui
     REBUILD = True
     #REBUILD_SHA = get_git_revision_hash(os.path.abspath(path))
-    REBUILD_SHA = get_git_submodule_hash(path)[1:41]
-    SUBMODULE_PULL = (REBUILD_SHA[0] == "-")
+    REBUILD_SHA_TEMP = get_git_submodule_hash(path)
+    REBUILD_SHA = REBUILD_SHA_TEMP[1:41]
+    SUBMODULE_PULL = (REBUILD_SHA_TEMP[0] == "-")
 
     #Check to see if we can skip rebuild. Cant skip if any of deps are rebuilt. 
     try:
