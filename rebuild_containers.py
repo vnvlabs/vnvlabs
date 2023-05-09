@@ -39,6 +39,12 @@ def repo_name(name,repo=REPO_OWNER):
 def get_git_revision_hash(directory):
     return subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=directory).decode('ascii').strip()
 
+def get_git_submodule_hash(directory):
+    return subprocess.check_output(['git', 'submodule', "status", directory ]).decode('ascii')
+
+def init_and_update_submodule(path):
+    return subprocess.check_output(["git", "submodule", "update", "--init","--recursive", path]).decode('ascii')
+
 #Get a hash for a file
 def sha256sum(filename):
     h  = hashlib.sha256()
@@ -106,6 +112,7 @@ def file_needs_rebuild(path, reponame, tag=REFTAG, repo=REPO_OWNER, from_image=N
     #Step 1a Check if we need to build env
     REBUILD = True
     REBUILD_SHA = sha256sum(path)
+
     if FULLREBUILD is False:
        if from_image is None or REBUILD_INFO[from_image][0] is False:
          if True not in [REBUILD_INFO[a][0] for a in dependencies]:  # And none of the other deps were modified
@@ -161,11 +168,15 @@ def file_needs_rebuild(path, reponame, tag=REFTAG, repo=REPO_OWNER, from_image=N
     else:
         REBUILD_INFO[rname].append(True)
 
+
+
 def repo_needs_rebuild(path, reponame, tag=REFTAG, repo=REPO_OWNER, from_image=None, dockerfile="docker/Dockerfile", otag=TAG, ftag=TAG, build_args ={}, dependencies=[]):
     #Step 3: Check if we need to rebuild the gui
     REBUILD = True
-    REBUILD_SHA = get_git_revision_hash(os.path.abspath(path))
-    
+    #REBUILD_SHA = get_git_revision_hash(os.path.abspath(path))
+    REBUILD_SHA = get_git_submodule_hash(path)[1:41]
+    SUBMODULE_PULL = (REBUILD_SHA[0] == "-")
+
     #Check to see if we can skip rebuild. Cant skip if any of deps are rebuilt. 
     try:
      if FULLREBUILD is False: #If we didnt request a full rebuild
@@ -202,8 +213,9 @@ def repo_needs_rebuild(path, reponame, tag=REFTAG, repo=REPO_OWNER, from_image=N
         print("Building ", f"{repo_name(reponame,repo=repo)}:{otag}")
         if from_image is not None:
             build_args["FROM_IMAGE"] = f"{repo_name(from_image,repo=repo)}:{ftag}"
-        
 
+        if SUBMODULE_PULL:
+            init_and_update_submodule(path)
 
         REBUILD_INFO[rname].append(build_image(
             build_context=path,
