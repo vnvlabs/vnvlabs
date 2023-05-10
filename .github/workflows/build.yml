@@ -25,7 +25,7 @@ jobs:
              python -m pip install --upgrade pip
              pip install docker
       - name: Build
-        run: git submodule update --init --recursive vnv 
+        run: rm -rp vnv && git clone https://github.com/vnvlabs/vnv 
 
 
                
