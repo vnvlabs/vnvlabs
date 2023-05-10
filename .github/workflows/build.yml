@@ -24,8 +24,11 @@ jobs:
         run: |
              python -m pip install --upgrade pip
              pip install docker
+      #Converts all the submodules to https submodules so we can check them out without creds.
+      - name: SSH To Https
+        run: python ssh_submodules_to_http_submodules.py
       - name: Build
-        run: rm -r vnv && git clone https://github.com/vnvlabs/vnv 
+        run: python rebuild_containers.py --push
 
 
                
