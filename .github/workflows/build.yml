@@ -27,6 +27,12 @@ jobs:
       #Converts all the submodules to https submodules so we can check them out without creds.
       - name: SSH To Https
         run: python .github/workflows/ssh_to_https.py
+      - name: Test Pull
+        run: docker pull ghcr.io/vnvlabs/vnv:nightly
+      - name: Test Checkout
+        run: git submodule update --init vnv
+      - name: Test Push
+        run: docker push ghcr.io/vnvlabs/vnv:nightly
       - name: Build
         run: python rebuild_containers.py --push
 
