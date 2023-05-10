@@ -1,10 +1,8 @@
-
 name: Nightly Build and Release
 on:
   schedule:
   - cron: 0 2 * * *
   workflow_dispatch: {}
-  
 jobs:
   all:
     needs:
@@ -17,37 +15,93 @@ jobs:
     - moose
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: all
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage all
+      run: python .github/workflows/rebuild_containers_.py --push --stage all
   asgard:
     needs:
     - vnv
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: asgard
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage asgard
+      run: python .github/workflows/rebuild_containers_.py --push --stage asgard
   demo:
     needs:
     - simple
     - heat
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: demo
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage demo
+      run: python .github/workflows/rebuild_containers_.py --push --stage demo
   env:
     needs: []
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: env
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage env
+      run: python .github/workflows/rebuild_containers_.py --push --stage env
   fall:
     needs:
     - gui
@@ -55,10 +109,24 @@ jobs:
     - all
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: fall
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage fall
+      run: python .github/workflows/rebuild_containers_.py --push --stage fall
   fasgard:
     needs:
     - gui
@@ -66,10 +134,24 @@ jobs:
     - asgard
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: fasgard
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage fasgard
+      run: python .github/workflows/rebuild_containers_.py --push --stage fasgard
   fdemo:
     needs:
     - gui
@@ -77,10 +159,24 @@ jobs:
     - demo
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: fdemo
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage fdemo
+      run: python .github/workflows/rebuild_containers_.py --push --stage fdemo
   fheat:
     needs:
     - gui
@@ -88,10 +184,24 @@ jobs:
     - heat
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: fheat
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage fheat
+      run: python .github/workflows/rebuild_containers_.py --push --stage fheat
   fhypre:
     needs:
     - gui
@@ -99,10 +209,24 @@ jobs:
     - hypre
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: fhypre
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage fhypre
+      run: python .github/workflows/rebuild_containers_.py --push --stage fhypre
   flibmesh:
     needs:
     - gui
@@ -110,10 +234,24 @@ jobs:
     - libmesh
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: flibmesh
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage flibmesh
+      run: python .github/workflows/rebuild_containers_.py --push --stage flibmesh
   fmfem:
     needs:
     - gui
@@ -121,10 +259,24 @@ jobs:
     - mfem
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: fmfem
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage fmfem
+      run: python .github/workflows/rebuild_containers_.py --push --stage fmfem
   fminiamr:
     needs:
     - gui
@@ -132,10 +284,24 @@ jobs:
     - miniamr
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: fminiamr
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage fminiamr
+      run: python .github/workflows/rebuild_containers_.py --push --stage fminiamr
   fmoose:
     needs:
     - gui
@@ -143,10 +309,24 @@ jobs:
     - moose
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: fmoose
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage fmoose
+      run: python .github/workflows/rebuild_containers_.py --push --stage fmoose
   fperformance:
     needs:
     - gui
@@ -154,10 +334,24 @@ jobs:
     - performance
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: fperformance
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage fperformance
+      run: python .github/workflows/rebuild_containers_.py --push --stage fperformance
   fpetsc:
     needs:
     - gui
@@ -165,10 +359,24 @@ jobs:
     - petsc
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: fpetsc
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage fpetsc
+      run: python .github/workflows/rebuild_containers_.py --push --stage fpetsc
   fplugins:
     needs:
     - gui
@@ -176,10 +384,24 @@ jobs:
     - plugins
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: fplugins
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage fplugins
+      run: python .github/workflows/rebuild_containers_.py --push --stage fplugins
   fproxyapps:
     needs:
     - gui
@@ -187,10 +409,24 @@ jobs:
     - proxyapps
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: fproxyapps
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage fproxyapps
+      run: python .github/workflows/rebuild_containers_.py --push --stage fproxyapps
   fsimple:
     needs:
     - gui
@@ -198,10 +434,24 @@ jobs:
     - simple
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: fsimple
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage fsimple
+      run: python .github/workflows/rebuild_containers_.py --push --stage fsimple
   fswfft:
     needs:
     - gui
@@ -209,10 +459,24 @@ jobs:
     - swfft
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: fswfft
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage fswfft
+      run: python .github/workflows/rebuild_containers_.py --push --stage fswfft
   fvnv:
     needs:
     - gui
@@ -220,10 +484,24 @@ jobs:
     - vnv
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: fvnv
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage fvnv
+      run: python .github/workflows/rebuild_containers_.py --push --stage fvnv
   fxsbench:
     needs:
     - gui
@@ -231,99 +509,253 @@ jobs:
     - xsbench
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: fxsbench
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage fxsbench
+      run: python .github/workflows/rebuild_containers_.py --push --stage fxsbench
   gui:
     needs: []
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: gui
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage gui
+      run: python .github/workflows/rebuild_containers_.py --push --stage gui
   heat:
     needs:
     - vnv
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: heat
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage heat
+      run: python .github/workflows/rebuild_containers_.py --push --stage heat
   hypre:
     needs:
     - vnv
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: hypre
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage hypre
+      run: python .github/workflows/rebuild_containers_.py --push --stage hypre
   libmesh:
     needs:
     - petsc
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: libmesh
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage libmesh
+      run: python .github/workflows/rebuild_containers_.py --push --stage libmesh
   mfem:
     needs:
     - petsc
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: mfem
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage mfem
+      run: python .github/workflows/rebuild_containers_.py --push --stage mfem
   miniamr:
     needs:
     - vnv
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: miniamr
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage miniamr
+      run: python .github/workflows/rebuild_containers_.py --push --stage miniamr
   moose:
     needs:
     - libmesh
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: moose
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage moose
+      run: python .github/workflows/rebuild_containers_.py --push --stage moose
   performance:
     needs:
     - vnv
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: performance
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage performance
+      run: python .github/workflows/rebuild_containers_.py --push --stage performance
   petsc:
     needs:
     - hypre
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: petsc
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage petsc
+      run: python .github/workflows/rebuild_containers_.py --push --stage petsc
   plugins:
     needs:
     - performance
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: plugins
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage plugins
+      run: python .github/workflows/rebuild_containers_.py --push --stage plugins
   proxyapps:
     needs:
     - swfft
@@ -331,43 +763,113 @@ jobs:
     - xsbench
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: proxyapps
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage proxyapps
+      run: python .github/workflows/rebuild_containers_.py --push --stage proxyapps
   simple:
     needs:
     - vnv
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: simple
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage simple
+      run: python .github/workflows/rebuild_containers_.py --push --stage simple
   swfft:
     needs:
     - vnv
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: swfft
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage swfft
+      run: python .github/workflows/rebuild_containers_.py --push --stage swfft
   vnv:
     needs:
     - env
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: vnv
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage vnv
+      run: python .github/workflows/rebuild_containers_.py --push --stage vnv
   xsbench:
     needs:
     - vnv
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/stage
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: python
+      uses: actions/setup-python@v2
       with:
-        stage: xsbench
+        python-version: '3.9'
+    - name: docker
+      uses: docker/login-action@v1
+      with:
+        password: ${{secrets.GITHUB_TOKEN}}
+        registry: ghcr.io
+        username: ${{github.actor}}
+    - name: Install Deps
+      run: python -m pip install --upgrade pip && pip install docker
+    - name: SSH TO HTTP
+      run: python .github/workflows/ssh_to_https.py
+    - name: Build Stage xsbench
+      run: python .github/workflows/rebuild_containers_.py --push --stage xsbench

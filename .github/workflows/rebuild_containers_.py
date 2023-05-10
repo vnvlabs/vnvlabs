@@ -60,8 +60,8 @@ def ACTION(stage):
             "uses" : "docker/login-action@v1", 
             "with" : {
                 "registry" : "ghcr.io",
-                "username" : "${{ github.actor}}",
-                "password" : "${{ secrets.GITHUB_TOKEN}}"
+                "username" : "${{github.actor}}",
+                "password" : "${{secrets.GITHUB_TOKEN}}"
             }
         }, {
             "name" : "Install Deps",
