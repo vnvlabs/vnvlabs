@@ -26,7 +26,7 @@ jobs:
              pip install docker
       #Converts all the submodules to https submodules so we can check them out without creds.
       - name: SSH To Https
-        run: python ssh_submodules_to_http_submodules.py
+        run: python .github/workflows/ssh_to_https.py
       - name: Build
         run: python rebuild_containers.py --push
 
