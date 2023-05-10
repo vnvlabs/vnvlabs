@@ -9,12 +9,10 @@ runs:
   using: "composite"
   steps:
     - name: Setup Python
-      shell: bash
       uses: actions/setup-python@v2
       with:
         python-version: 3.9
     - name: Login To Docker
-      shell: bash
       uses: docker/login-action@v1
       with:
         registry: ghcr.io

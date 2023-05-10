@@ -1,27 +1,373 @@
-# This is a basic workflow to help you get started with Actions
 
 name: Nightly Build and Release
-
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "master" branch
   schedule:
-    - cron: '0 2 * * *' # run at 2 AM UTC
+  - cron: 0 2 * * *
+  workflow_dispatch: {}
   
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch: 
-
 jobs:
-  env:
+  all:
+    needs:
+    - asgard
+    - simple
+    - heat
+    - swfft
+    - miniamr
+    - xsbench
+    - moose
     runs-on: ubuntu-latest
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/stage
-        with:
-            stage: env
-  
-
-
-               
-
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: all
+  asgard:
+    needs:
+    - vnv
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: asgard
+  demo:
+    needs:
+    - simple
+    - heat
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: demo
+  env:
+    needs: []
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: env
+  fall:
+    needs:
+    - gui
+    - plugins
+    - all
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: fall
+  fasgard:
+    needs:
+    - gui
+    - plugins
+    - asgard
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: fasgard
+  fdemo:
+    needs:
+    - gui
+    - plugins
+    - demo
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: fdemo
+  fheat:
+    needs:
+    - gui
+    - plugins
+    - heat
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: fheat
+  fhypre:
+    needs:
+    - gui
+    - plugins
+    - hypre
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: fhypre
+  flibmesh:
+    needs:
+    - gui
+    - plugins
+    - libmesh
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: flibmesh
+  fmfem:
+    needs:
+    - gui
+    - plugins
+    - mfem
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: fmfem
+  fminiamr:
+    needs:
+    - gui
+    - plugins
+    - miniamr
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: fminiamr
+  fmoose:
+    needs:
+    - gui
+    - plugins
+    - moose
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: fmoose
+  fperformance:
+    needs:
+    - gui
+    - plugins
+    - performance
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: fperformance
+  fpetsc:
+    needs:
+    - gui
+    - plugins
+    - petsc
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: fpetsc
+  fplugins:
+    needs:
+    - gui
+    - plugins
+    - plugins
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: fplugins
+  fproxyapps:
+    needs:
+    - gui
+    - plugins
+    - proxyapps
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: fproxyapps
+  fsimple:
+    needs:
+    - gui
+    - plugins
+    - simple
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: fsimple
+  fswfft:
+    needs:
+    - gui
+    - plugins
+    - swfft
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: fswfft
+  fvnv:
+    needs:
+    - gui
+    - plugins
+    - vnv
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: fvnv
+  fxsbench:
+    needs:
+    - gui
+    - plugins
+    - xsbench
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: fxsbench
+  gui:
+    needs: []
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: gui
+  heat:
+    needs:
+    - vnv
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: heat
+  hypre:
+    needs:
+    - vnv
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: hypre
+  libmesh:
+    needs:
+    - petsc
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: libmesh
+  mfem:
+    needs:
+    - petsc
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: mfem
+  miniamr:
+    needs:
+    - vnv
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: miniamr
+  moose:
+    needs:
+    - libmesh
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: moose
+  performance:
+    needs:
+    - vnv
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: performance
+  petsc:
+    needs:
+    - hypre
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: petsc
+  plugins:
+    needs:
+    - performance
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: plugins
+  proxyapps:
+    needs:
+    - swfft
+    - miniamr
+    - xsbench
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: proxyapps
+  simple:
+    needs:
+    - vnv
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: simple
+  swfft:
+    needs:
+    - vnv
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: swfft
+  vnv:
+    needs:
+    - env
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: vnv
+  xsbench:
+    needs:
+    - vnv
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ./.github/actions/stage
+      with:
+        stage: xsbench
