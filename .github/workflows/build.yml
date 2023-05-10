@@ -28,7 +28,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage all
@@ -51,7 +51,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage asgard
@@ -75,7 +75,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage demo
@@ -97,7 +97,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage env
@@ -122,7 +122,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage fall
@@ -147,7 +147,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage fasgard
@@ -172,7 +172,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage fdemo
@@ -197,7 +197,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage fheat
@@ -222,7 +222,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage fhypre
@@ -247,7 +247,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage flibmesh
@@ -272,7 +272,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage fmfem
@@ -297,7 +297,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage fminiamr
@@ -322,7 +322,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage fmoose
@@ -347,7 +347,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage fperformance
@@ -372,7 +372,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage fpetsc
@@ -397,7 +397,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage fplugins
@@ -422,7 +422,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage fproxyapps
@@ -447,7 +447,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage fsimple
@@ -472,7 +472,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage fswfft
@@ -497,7 +497,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage fvnv
@@ -522,7 +522,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage fxsbench
@@ -544,7 +544,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage gui
@@ -567,7 +567,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage heat
@@ -590,7 +590,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage hypre
@@ -613,7 +613,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage libmesh
@@ -636,7 +636,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage mfem
@@ -659,7 +659,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage miniamr
@@ -682,7 +682,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage moose
@@ -705,7 +705,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage performance
@@ -728,7 +728,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage petsc
@@ -751,7 +751,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage plugins
@@ -776,7 +776,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage proxyapps
@@ -799,7 +799,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage simple
@@ -822,7 +822,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage swfft
@@ -845,7 +845,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage vnv
@@ -868,7 +868,7 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
     - name: Install Deps
-      run: python -m pip install --upgrade pip && pip install docker
+      run: python -m pip install --upgrade pip && pip install docker pyyaml
     - name: SSH TO HTTP
       run: python .github/workflows/ssh_to_https.py
     - name: Build Stage xsbench

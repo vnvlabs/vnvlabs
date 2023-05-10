@@ -65,7 +65,7 @@ def ACTION(stage):
             }
         }, {
             "name" : "Install Deps",
-            "run" : "python -m pip install --upgrade pip && pip install docker"
+            "run" : "python -m pip install --upgrade pip && pip install docker pyyaml"
         }, {
             "name" : "SSH TO HTTP",
             "run" : "python .github/workflows/ssh_to_https.py"
