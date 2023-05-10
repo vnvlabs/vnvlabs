@@ -44,16 +44,43 @@ docker_client = docker.from_env()
 
 build_args = {"VERSION": TAG, "REPO": REPO_OWNER}
 
+def ACTION(stage):
+    return [
+        {
+            "name" : "checkout" , 
+            "uses" : "actions/checkout@v3" 
+        }, {
+            "name" : "python" , 
+            "uses" : "actions/setup-python@v2", 
+            "with" : {
+                "python-version" : "3.9"
+            }
+        }, {
+            "name" : "docker" ,
+            "uses" : "docker/login-action@v1", 
+            "with" : {
+                "registry" : "ghcr.io",
+                "username" : "${{ github.actor}}",
+                "password" : "${{ secrets.GITHUB_TOKEN}}"
+            }
+        }, {
+            "name" : "Install Deps",
+            "run" : "python -m pip install --upgrade pip && pip install docker"
+        }, {
+            "name" : "SSH TO HTTP",
+            "run" : "python .github/workflows/ssh_to_https.py"
+        }, {
+            "name" : "Build Stage " + stage,
+            "run" : "python .github/workflows/rebuild_containers_.py --push --stage " + stage 
+        }
+    ]
+
+
 def JOB_WF(stage, header):
     header[stage] = {
         "runs-on" : "ubuntu-latest",
         "needs" : [ a.split(":")[0] for a in STAGES[stage].get("dependencies",[]) ],
-        "steps" : [{
-            "uses" : "actions/checkout@v3"   
-        }, {
-            "uses" : "./.github/actions/stage",
-            "with" : {"stage" : stage}
-        }]
+        "steps" : ACTION(stage)
     }
     from_image = STAGES[stage].get("from_image")
     if from_image is not None:
@@ -63,7 +90,7 @@ def HEADER_WF():
    Y = {}
    Y["name"] = "Nightly Build and Release"
 
-   Y["jobs"] = {} 
+   Y["jobs"] = {}
    Y["on"] = {
        "schedule" : [{"cron" : '0 2 * * *'}],
        "workflow_dispatch" : {}
