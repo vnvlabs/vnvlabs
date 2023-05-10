@@ -13,6 +13,7 @@ runs:
       with:
         python-version: 3.9
     - name: Login To Docker
+      uses: docker/login-action@v1
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
