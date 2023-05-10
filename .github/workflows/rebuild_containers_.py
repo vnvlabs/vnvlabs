@@ -5,7 +5,7 @@ import hashlib
 import subprocess
 import os
 import argparse
-
+import yaml
 
 
 # Create the argument parser
@@ -20,6 +20,7 @@ parser.add_argument('--actually_build', action='store_false', help='Whether to a
 parser.add_argument('--cache_from_nightly', action='store_false', help='Whether to use nightly cache to build')
 parser.add_argument('--push', action='store_true', help='Push at end')
 parser.add_argument('--stage', type=str, help='Stage', default="env")
+parser.add_argument('--gen', action='store_false', help='Gen workflow file')
 
 # Parse the arguments
 args = parser.parse_args()
@@ -33,14 +34,50 @@ ACTUALLY_BUILD = args.actually_build
 CACHE_FROM_NIGHTLY = args.cache_from_nightly
 PUSH_TO_GHCR = args.push
 STAGE= args.stage
+BUILDING=args.gen
 
 REBUILD_INFO = {}
 docker_client = docker.from_env()
 
 
+
+
 build_args = {"VERSION": TAG, "REPO": REPO_OWNER}
 
+def JOB_WF(stage, header):
+    header[stage] = {
+        "runs-on" : "ubuntu-latest",
+        "needs" : [ a.split(":")[0] for a in STAGES[stage].get("dependencies",[]) ],
+        "steps" : [{
+            "uses" : "actions/checkout@v3"   
+        }, {
+            "uses" : "./.github/actions/stage",
+            "with" : {"stage" : stage}
+        }]
+    }
+    from_image = STAGES[stage].get("from_image")
+    if from_image is not None:
+        header[stage]["needs"].append(from_image)
 
+def HEADER_WF():
+   Y = {}
+   Y["name"] = "Nightly Build and Release"
+
+   Y["jobs"] = {} 
+   Y["on"] = {
+       "schedule" : [{"cron" : '0 2 * * *'}],
+       "workflow_dispatch" : {}
+   }
+   return Y
+
+
+def DUMP_WORKFLOW_FILE():
+     header = HEADER_WF()
+     for stage in STAGES:
+         JOB_WF(stage,header["jobs"])
+     print(yaml.dump(header))     
+    
+    
 
 STAGES = {
     "env" : dict(path="env/Dockerfile", reponame="env"),
@@ -272,12 +309,19 @@ def actually_rebuild(path, reponame, repo=REPO_OWNER, otag=TAG, cachetag=REFTAG,
     else:
         return True
 
-needs_rebuild(**(STAGES[STAGE]))
-res = actually_rebuild(**(STAGES[STAGE]))
 
-print(json.dumps(REBUILD_INFO, indent=3))
-exit(0 if res else 1)
 
+
+if BUILDING:
+    
+   needs_rebuild(**(STAGES[STAGE]))
+   res = actually_rebuild(**(STAGES[STAGE]))
+
+   print(json.dumps(REBUILD_INFO, indent=3))
+   exit(0 if res else 1)
+
+else:
+    DUMP_WORKFLOW_FILE()
 
 
 
