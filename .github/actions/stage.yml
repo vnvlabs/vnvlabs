@@ -1,0 +1,26 @@
+name: 'Compile Stage Action'
+description: 'Sets up the repo and compiles stage'
+inputs:
+  stage:  # id of input
+    description: 'What Stage to compile'
+    required: true
+    default: 'env'
+runs:
+  using: "composite"
+  - uses: actions/setup-python@v2
+    with:
+      python-version: 3.9
+  - uses: docker/login-action@v1
+    with:
+      registry: ghcr.io
+      username: ${{ github.actor }}
+      password: ${{ secrets.GITHUB_TOKEN }}
+  - name: Install dependencies
+    run: |
+        python -m pip install --upgrade pip
+        pip install docker
+  #Converts all the submodules to https submodules so we can check them out without creds.
+  - name: SSH To Httpsg
+    run: python .github/workflows/ssh_to_https.py
+  - name: Build
+        run: python .github/workflows/rebuild_containers_.py --push --stage  ${{ inputs.stage }}

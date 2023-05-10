@@ -6,7 +6,6 @@ import subprocess
 import os
 import argparse
 
-build_args = {"VERSION": TAG, "REPO": REPO_OWNER}
 
 
 # Create the argument parser
@@ -20,7 +19,7 @@ parser.add_argument('--full_rebuild', action='store_true', help='Whether to perf
 parser.add_argument('--actually_build', action='store_false', help='Whether to actually build the image')
 parser.add_argument('--cache_from_nightly', action='store_false', help='Whether to use nightly cache to build')
 parser.add_argument('--push', action='store_true', help='Push at end')
-parser.add_argument('--stage', type=str, help='Stage', default="_")
+parser.add_argument('--stage', type=str, help='Stage', default="env")
 
 # Parse the arguments
 args = parser.parse_args()
@@ -37,6 +36,11 @@ STAGE= args.stage
 
 REBUILD_INFO = {}
 docker_client = docker.from_env()
+
+
+build_args = {"VERSION": TAG, "REPO": REPO_OWNER}
+
+
 
 STAGES = {
     "env" : dict(path="env/Dockerfile", reponame="env"),
@@ -68,10 +72,10 @@ package_build_args = {
 for package in ["vnv", "performance", "plugins", "asgard", "heat", "simple", "miniamr", "swfft", "xsbench", "hypre", "petsc", "libmesh", "mfem", "moose", "all", "demo", "proxyapps"]:
    STAGES[f"f{package}"] = dict(path="applications/docker/Dockerfile_wrap",
                               reponame=f"{package}", 
-                              otag=f"f{package}", 
+                              otag=f"f{TAG}", 
                               from_image=package,
                               from_tag=TAG,
-                              dependencies=["gui", "plugins"],
+                              dependencies=[f"gui:{TAG}", f"plugins:{TAG}"],
                               build_args=package_build_args,
                               cachetag = f"f{REFTAG}"
                               )
@@ -117,10 +121,10 @@ def pull_image(image, tag=TAG):
 def check_image_sha(image, tag=TAG, sha="none"):
     try:
 
-        image = docker_client.images.pull(image, tag=tag)
-        if image is None:
-            return False, "could not find image"
-        elif image.labels.get("vnvsha","def") != sha:
+        res = subprocess.check_output(['skopeo', 'inspect', f"docker://{image}:{tag}"]).decode('ascii')
+        labs = json.loads(res)["Labels"]["vnvsha"]
+        
+        if labs != sha:
             return False, "SHA do not match"
         return True, "Dont rebuild"
     
@@ -170,6 +174,9 @@ def build_image(build_context, dockerfile_rel_bc, cache_from, repo_and_tag, buil
 
 def needs_rebuild(path, reponame, cachetag=REFTAG, otag=TAG, repo=REPO_OWNER, from_image=None, from_tag=TAG, dependencies=[], **kwargs):
     
+    if f"{reponame}:{otag}" in REBUILD_INFO:
+        return
+    
     REBUILD = True
     if os.path.isdir(path):
        REBUILD_SHA_TEMP = get_git_submodule_hash(path)
@@ -182,11 +189,11 @@ def needs_rebuild(path, reponame, cachetag=REFTAG, otag=TAG, repo=REPO_OWNER, fr
     if FULLREBUILD is False:
   
         if from_image is not None and f"{from_image}:{from_tag}" not in REBUILD_INFO:
-            needs_rebuild(**(STAGES[ f"{from_image}:{from_tag}"]))
+            needs_rebuild(**(STAGES[ f"{from_image}"]))
 
         for image in dependencies:
             if image not in REBUILD_INFO:
-                needs_rebuild(**STAGES[image])
+                needs_rebuild(**STAGES[image.split(":")[0]])
 
         if from_image is None or REBUILD_INFO[f"{from_image}:{from_tag}"][0] is False:
             if True not in [REBUILD_INFO[a][0] for a in dependencies]:  # And none of the other deps were modified
@@ -194,7 +201,7 @@ def needs_rebuild(path, reponame, cachetag=REFTAG, otag=TAG, repo=REPO_OWNER, fr
                 if matches:
                     REBUILD = False
                 else:
-                    print("Rebuilding because ", reason)
+                    print("Rebuilding ", reponame  ," because ", reason)
             else:
                 print("Rebuilding because one of the dependencies is rebuilt:",
                     [a for a in REBUILD_INFO.keys() if REBUILD_INFO[a][0]])
@@ -203,15 +210,13 @@ def needs_rebuild(path, reponame, cachetag=REFTAG, otag=TAG, repo=REPO_OWNER, fr
     else:
         print("Rebuilding because full_rebuild was requested")
     
-    REBUILD_INFO[f"{reponame}:{otag}"] = [REBUILD, REBUILD_SHA]
+    REBUILD_INFO[f"{reponame}:{otag}"] = [REBUILD, REBUILD_SHA, SUBMODULE_PULL]
 
 def actually_rebuild(path, reponame, repo=REPO_OWNER, otag=TAG, cachetag=REFTAG, from_image=None, from_tag=TAG, build_args={}, dependencies=[], dockerfile="docker/Dockerfile", **kwargs):
 
     if ACTUALLY_BUILD:
 
- 
-
-        if REBUILD_INFO[f"{reponame}:{otag}"]:
+        if REBUILD_INFO[f"{reponame}:{otag}"][0]:
 
             if from_image is not None and REBUILD_INFO[f"{from_image}:{from_tag}"][0] is True:
                 if not actually_rebuild(**(STAGES[f"{from_image}:{from_tag}"])):
@@ -233,7 +238,7 @@ def actually_rebuild(path, reponame, repo=REPO_OWNER, otag=TAG, cachetag=REFTAG,
             for image in dependencies:
                 pull_image(repo_name(image.split(":")[0], repo=repo), tag=image.split(":")[1])
 
-            if SUBMODULE_PULL:
+            if REBUILD_INFO[f"{reponame}:{otag}"][2]:
                 init_and_update_submodule(path)
 
             isdir = os.path.isdir(path)
@@ -268,7 +273,10 @@ def actually_rebuild(path, reponame, repo=REPO_OWNER, otag=TAG, cachetag=REFTAG,
         return True
 
 needs_rebuild(**(STAGES[STAGE]))
-actually_build(**(STAGES[STAGE]))
+res = actually_rebuild(**(STAGES[STAGE]))
+
+print(json.dumps(REBUILD_INFO, indent=3))
+exit(0 if res else 1)
 
 
 
