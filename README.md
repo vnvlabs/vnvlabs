@@ -7,6 +7,8 @@ VnVLabs is an simple, low-code framework for automated GUI building in scientifi
 
 ## The VnV Graphical User Interface
 
+[![Nightly Build and Release](https://github.com/vnvlabs/vnvlabs/actions/workflows/build.yml/badge.svg)](https://github.com/vnvlabs/vnvlabs/actions/workflows/build.yml)
+
 The VnV Graphical User interface is a web-based user interface for designing, running and analyzing numerical simulations. The interface provides a built
 in IDE (using Eclipe Theia), built in 3D visualization (using Paraview Visualizer), and a custom built application execution interface. The GUI can be hosted
 locally, and on the web, making it an extremely effective approach for both local and remote development. 
