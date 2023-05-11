@@ -112,7 +112,7 @@ STAGES = {
     "vnv" : dict(path="vnv", reponame="vnv", from_image="env", from_tag=TAG),
     "performance" : dict(path="plugins/performance", reponame="performance", from_image="vnv", from_tag=TAG),
     "asgard" : dict(path="applications/asgard", reponame="asgard", from_image="vnv", from_tag=TAG),
-    "heat" : dict(path="applications/asgard", reponame="asgard", from_image="vnv", from_tag=TAG),
+    "heat" : dict(path="applications/heat", reponame="heat", from_image="vnv", from_tag=TAG),
     "simple" : dict(path="applications/simple", reponame="simple", from_image="vnv", from_tag=TAG),
     "miniamr" : dict(path="applications/miniamr", reponame="miniamr", from_image="vnv", from_tag=TAG),
     "swfft" : dict(path="applications/swfft", reponame="swfft", from_image="vnv", from_tag=TAG),
