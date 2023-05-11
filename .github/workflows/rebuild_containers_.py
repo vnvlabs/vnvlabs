@@ -128,6 +128,7 @@ STAGES = {
     "all" : dict(path="applications/docker/Dockerfile_all", reponame="all", dependencies=[f"asgard:{TAG}",f"simple:{TAG}", f"heat:{TAG}",f"swfft:{TAG}", f"miniamr:{TAG}", f"xsbench:{TAG}", f"moose:{TAG}"], build_args=build_args)
 }
 
+
 package_build_args = {
     "GUI_IMAGE": f"{REPO_OWNER}/gui:{TAG}",
     "PLUGIN_IMAGE": f"{REPO_OWNER}/plugins:{TAG}"
