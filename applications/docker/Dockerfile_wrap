@@ -25,7 +25,7 @@ COPY --from=0 /vnvgui/paraview /vnvgui/paraview
 COPY --from=1 ${SOFTWARE_DIR}/plugins ${SOFTWARE_DIR}/plugins
 ENV VNV_CONFIG=${VNV_CONFIG}:${SOFTWARE_DIR}/plugins/vnv.__registration__
 
-
+ 
 LABEL VNV_GUI_EQUIPT=1
 WORKDIR /vnvgui/gui
 ENTRYPOINT ["./launch.sh"]

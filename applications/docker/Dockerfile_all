@@ -27,7 +27,7 @@ ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/heat/build/vnv.__registration__
 
 COPY --from=mfem ${SOURCE_DIR}/mfem ${SOURCE_DIR}/mfem
 COPY --from=mfem ${SOFTWARE_DIR}/mfem ${SOFTWARE_DIR}/mfem
-ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/mfem/docker_build/vnv.__registration__
+ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/mfem/build/vnv.__registration__
 
 COPY --from=miniamr ${SOURCE_DIR}/miniAMR ${SOURCE_DIR}/miniAMR
 ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/swfft/build/vnv.__registration__
