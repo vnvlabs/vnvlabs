@@ -8,6 +8,7 @@ ENV TZ=America/New_York
 ENV DEBIAN_FRONTEND=noninteractive 
 ENV SOURCE_DIR=/home/user/source
 ENV SOFTWARE_DIR=/home/user/software
+ENV HOME=/home/user
 ENV ADIOS_DIR=${SOFTWARE_DIR}/adios
 ENV LLVM_DIR=/usr/lib/llvm-${llvm_version}
 
