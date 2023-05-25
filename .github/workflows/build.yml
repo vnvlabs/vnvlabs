@@ -58,11 +58,11 @@ jobs:
       id: download-paraview
       with:
         path: ./gui/pv.tar.gz
-        key: download-paraview-${{ hashFiles('./gui/download_paraview.sh') }}
+        key: download-paraview
     
     - if: ${{steps.download-paraview.outputs.cache-hit != 'true'}}
       name: Download the binary
-      run: ./gui/download_paraview.sh
+      run: pwd && ./gui/download_paraview.sh
 
     - name: Build Stage gui
       run: python .github/workflows/rebuild_containers_.py --push --stage gui
