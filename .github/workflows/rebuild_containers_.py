@@ -210,6 +210,8 @@ def check_image_sha(image, tag=TAG, sha="none"):
         res = subprocess.check_output(['skopeo', 'inspect', f"docker://{image}:{tag}"]).decode('ascii')
         labs = json.loads(res)["Labels"]["vnvsha"]
         
+        print(sha, labs)
+        
         if labs != sha:
             return False, "SHA do not match"
         return True, "Dont rebuild"
