@@ -44,8 +44,8 @@ docker_client = docker.from_env()
 
 build_args = {"VERSION": TAG, "REPO": REPO_OWNER}
 
-def ACTION(stage):
-    return [
+def ACTION(stage, extra = []):
+    a = [
         {
             "name" : "checkout" , 
             "uses" : "actions/checkout@v3" 
@@ -69,18 +69,21 @@ def ACTION(stage):
         }, {
             "name" : "SSH TO HTTP",
             "run" : "python .github/workflows/ssh_to_https.py"
-        }, {
+        }]
+    
+    b = [{
             "name" : "Build Stage " + stage,
             "run" : "python .github/workflows/rebuild_containers_.py --push --stage " + stage 
-        }
-    ]
+        }]
+    
+    return a + extra + b 
 
 
 def JOB_WF(stage, header):
     header[stage] = {
         "runs-on" : "ubuntu-latest",
         "needs" : [ a.split(":")[0] for a in STAGES[stage].get("dependencies",[]) ],
-        "steps" : ACTION(stage)
+        "steps" : ACTION(stage, extra =STAGES[stage].get("extra",[]))
     }
     from_image = STAGES[stage].get("from_image")
     if from_image is not None:
@@ -108,9 +111,25 @@ def DUMP_WORKFLOW_FILE():
     
     
 
+gui_extra = [
+      {
+          "name": "download-paraview",
+          "uses": "actions/cache@v3",
+          "id": "download-paraview",
+          "with": {
+            "path": "./pv.tar.gz",
+            "key": "download-paraview"
+          }
+      }, {
+          "if": "${{steps.download-paraview.outputs.cache-hit != 'true'}}",
+          "name" : "Download the binary",
+          "run" : "git submodule update --init gui && cd gui && ./download_paraview.sh" 
+      }
+]
+
 STAGES = {
     "env" : dict(path="env/Dockerfile", reponame="env"),
-    "gui" : dict(path="gui", reponame="gui", from_image=None),
+    "gui" : dict(path="gui", reponame="gui", from_image=None, extra=gui_extra),
     "vnv" : dict(path="vnv", reponame="vnv", from_image="env", from_tag=TAG),
     "performance" : dict(path="plugins/performance", reponame="performance", from_image="vnv", from_tag=TAG),
     "asgard" : dict(path="applications/asgard", reponame="asgard", from_image="vnv", from_tag=TAG),
