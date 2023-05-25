@@ -62,8 +62,7 @@ jobs:
     
     - if: ${{steps.download-paraview.outputs.cache-hit != 'true'}}
       name: Download the binary
-      working-directory: ./gui
-      run: ./download_paraview.sh
+      run: ./gui/download_paraview.sh
 
     - name: Build Stage gui
       run: python .github/workflows/rebuild_containers_.py --push --stage gui
