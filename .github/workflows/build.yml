@@ -55,15 +55,16 @@ jobs:
     
     - name: download-paraview
       uses: actions/cache@v3
+      working-directory: ./gui
       id: download-paraview
       with:
-        path: ~/pv.tar.gz
-        key: download-paraview-${{ hashFiles('download_paraview.sh') }}
+        path: ./pv.tar.gz
+        key: download-paraview-${{ hashFiles('./download_paraview.sh') }}
     
     - if: ${{steps.download-paraview.outputs.cache-hit != 'true'}}
       name: Download the binary
+      working-directory: ./gui
       run: ./download_paraview.sh
-
 
     - name: Build Stage gui
       run: python .github/workflows/rebuild_containers_.py --push --stage gui
