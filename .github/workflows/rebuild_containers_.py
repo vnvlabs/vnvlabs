@@ -26,9 +26,10 @@ parser.add_argument('--cache_from_nightly', action='store_false',
                     help='Whether to use nightly cache to build')
 parser.add_argument('--push', action='store_true', help='Push at end')
 parser.add_argument('--stage', type=str, help='Stage', default="env")
-parser.add_argument('--gen', action='store_false', help='Gen workflow file')
+parser.add_argument('--gen', type=int, help='0 for build, 1 for release, 2 for local, 3 to generate github workflow')
 parser.add_argument('--verbose', action='store_true', help='Verbose')
-
+parser.add_argument('--release', type=str, help="release version", default="")
+parser.add_argument('--local', action='store_true', help='Run locally in serial')
 
 # Parse the arguments
 args = parser.parse_args()
@@ -44,7 +45,7 @@ PUSH_TO_GHCR = args.push
 STAGE = args.stage
 BUILDING = args.gen
 VERBOSE = args.verbose
-
+RUN_LOCAL = False
 REBUILD_INFO = {}
 docker_client = docker.from_env()
 
@@ -139,13 +140,13 @@ STAGES = {
     "gui": dict(path="gui", reponame="gui", from_image=None, extra=gui_extra),
     "vnv": dict(path="vnv", reponame="vnv", from_image="env", from_tag=TAG),
     "performance": dict(path="plugins/performance", reponame="performance", from_image="vnv", from_tag=TAG),
-    "asgard": dict(path="applications/asgard", reponame="asgard", from_image="vnv", from_tag=TAG),
-    "heat": dict(path="applications/heat", reponame="heat", from_image="vnv", from_tag=TAG),
-    "simple": dict(path="applications/simple", reponame="simple", from_image="vnv", from_tag=TAG),
+    "asgard": dict(path="applications/asgard", reponame="asgard", from_image="vnv", from_tag=TAG, dockerfile="vnv/Dockerfile"),
+    "heat": dict(path="applications/heat", reponame="heat", from_image="vnv", from_tag=TAG, dockerfile="vnv/Dockerfile"),
+    "simple": dict(path="applications/simple", reponame="simple", from_image="vnv", from_tag=TAG,  dockerfile="vnv/Dockerfile"),
     "miniamr": dict(path="applications/miniamr", reponame="miniamr", from_image="vnv", from_tag=TAG),
     "swfft": dict(path="applications/swfft", reponame="swfft", from_image="vnv", from_tag=TAG),
     "xsbench": dict(path="applications/xsbench", reponame="xsbench", from_image="vnv", from_tag=TAG),
-    "hypre": dict(path="applications/hypre", reponame="hypre", from_image="vnv", from_tag=TAG),
+    "hypre": dict(path="applications/hypre", reponame="hypre", from_image="vnv", from_tag=TAG, dockerfile="vnv/Dockerfile"),
     "petsc": dict(path="applications/petsc", reponame="petsc", from_image="hypre", from_tag=TAG),
     "libmesh": dict(path="applications/libmesh", reponame="libmesh", from_image="petsc", from_tag=TAG),
     "mfem": dict(path="applications/mfem", reponame="mfem", from_image="petsc", from_tag=TAG),
@@ -155,6 +156,7 @@ STAGES = {
     "proxyapps": dict(path="applications/docker/Dockerfile_proxyapps", reponame="proxyapps", dependencies=[f"swfft:{TAG}", f"miniamr:{TAG}", f"xsbench:{TAG}"], build_args=build_args),
     "all": dict(path="applications/docker/Dockerfile_all", reponame="all", dependencies=[f"asgard:{TAG}", f"simple:{TAG}", f"heat:{TAG}", f"swfft:{TAG}", f"miniamr:{TAG}", f"xsbench:{TAG}", f"moose:{TAG}"], build_args=build_args)
 }
+
 
 
 package_build_args = {
@@ -320,7 +322,6 @@ def needs_rebuild(path, reponame, cachetag=REFTAG, otag=TAG, repo=REPO_OWNER, fr
         image_split = image.split(":")
         label = f"vnv_dep_sha_{image.replace(':','_')}"
         last_build_sha = labels.get(label,"<dne>")
-        print(labels)
         dep_labels = get_image_labels(repo_name(image_split[0], repo=repo), tag=image_split[1])
         if dep_labels.get("vnvsha","<dlabel>") != last_build_sha:
             print("Dep label ",  dep_labels.get("vnvsha","<dlabel>"), " Does not equal last build sha ", last_build_sha)
@@ -401,7 +402,46 @@ def rebuild_if_needs(path, reponame, repo=REPO_OWNER, otag=TAG, cachetag=REFTAG,
     return True
 
 
-if BUILDING:
+
+def release(version, repo=REPO_OWNER, rtag=TAG):
+    for KEY,VALUE in STAGES.items():
+        pull_image(repo_name(KEY, repo=repo), tag=rtag)
+        docker_client.api.tag(image=f"{repo_name(KEY, repo=repo)}:{rtag}", repository=repo_name(KEY,repo=repo), tag=version)
+        push_image(repo_name(KEY,repo=repo), tag=version)
+
+
+
+
+
+if BUILDING == 0 :
     exit(0 if rebuild_if_needs(**(STAGES[STAGE])) else 1)
+elif BUILDING == 1 and len(RELEASE_VERSION):
+    release(RELEASE_VERSION)
+elif BUILDING == 2:
+  done = set()
+  while len(done) < len(STAGES.keys()):
+    for key,value in STAGES.items():
+        
+        if key in done:
+            continue
+        elif "from_image" not in value or value["from_image"] is None or value["from_image"] in done:
+            
+            b = True
+            for dep in value.get("dependencies",[]):
+                if dep.split(":")[0] not in done:
+                    b = False
+                    break
+            if b:
+                done.add(key)
+                print("Building ", key)
+                #Build it cause all deps are done
+                if not rebuild_if_needs(**value):
+                    print("Build failed")
+                    exit(1)
+  
+            
+            
+             
+        
 else:
     DUMP_WORKFLOW_FILE()
