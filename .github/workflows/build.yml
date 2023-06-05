@@ -51,7 +51,7 @@ jobs:
       uses: actions/cache@v3
       id: download-paraview
       with:
-        path: ./gui/pv.tar.gz
+        path: ./pv.tar.gz
         key: download-paraview
     - if: ${{steps.download-paraview.outputs.cache-hit != 'true'}}
       name: Download the binary
