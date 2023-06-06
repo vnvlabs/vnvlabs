@@ -19,27 +19,32 @@ FROM ${REPO}/xsbench:${VERSION} as xsbench
 # Moose has vnv-hypre-petsc-libmesh-moose all installed already. 
 FROM ${REPO}/moose:${VERSION} as moose
 
-COPY --from=asgard ${SOURCE_DIR}/asgard ${SOURCE_DIR}/asgard
-ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/asgard/build/vnv.__registration__
+COPY --from=simple ${SOFTWARE_DIR}/simple ${SOFTWARE_DIR}/simple
+COPY --from=simple /home/user/.vnv /home/user/.vnvtmp
+RUN cd ${HOME} && awk '!seen[$0]++' .vnv .vnvtmp > .vnvt && mv .vnvt .vnv && rm .vnvtmp
 
-COPY --from=heat ${SOURCE_DIR}/heat ${SOURCE_DIR}/heat
-ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/heat/build/vnv.__registration__
+COPY --from=heat ${SOFTWARE_DIR}/heat ${SOFTWARE_DIR}/heat
+COPY --from=heat /home/user/.vnv /home/user/.vnvtmp
+RUN cd ${HOME} && awk '!seen[$0]++' .vnv .vnvtmp > .vnvt && mv .vnvt .vnv && rm .vnvtmp
 
-COPY --from=mfem ${SOURCE_DIR}/mfem ${SOURCE_DIR}/mfem
+COPY --from=asgard ${SOFTWARE_DIR}/asgard ${SOFTWARE_DIR}/asgard
+COPY --from=asgard /home/user/.vnv /home/user/.vnvtmp
+RUN cd ${HOME} && awk '!seen[$0]++' .vnv .vnvtmp > .vnvt && mv .vnvt .vnv && rm .vnvtmp
 COPY --from=mfem ${SOFTWARE_DIR}/mfem ${SOFTWARE_DIR}/mfem
-ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/mfem/build/vnv.__registration__
+COPY --from=mfem /home/user/.vnv /home/user/.vnvtmp
+RUN cd ${HOME} && awk '!seen[$0]++' .vnv .vnvtmp > .vnvt && mv .vnvt .vnv && rm .vnvtmp
 
-COPY --from=miniamr ${SOURCE_DIR}/miniAMR ${SOURCE_DIR}/miniAMR
-ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/swfft/build/vnv.__registration__
+COPY --from=miniamr ${SOFTWARE_DIR}/miniAMR ${SOFTWARE_DIR}/miniAMR
+COPY --from=miniamr /home/user/.vnv /home/user/.vnvtmp
+RUN cd ${HOME} && awk '!seen[$0]++' .vnv .vnvtmp > .vnvt && mv .vnvt .vnv && rm .vnvtmp
 
-COPY --from=simple ${SOURCE_DIR}/simple ${SOURCE_DIR}/simple
-ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/simple/build/vnv.__registration__
+COPY --from=swfft ${SOFTWARE_DIR}/swfft ${SOFTWARE_DIR}/swfft
+COPY --from=swfft /home/user/.vnv /home/user/.vnvtmp
+RUN cd ${HOME} && awk '!seen[$0]++' .vnv .vnvtmp > .vnvt && mv .vnvt .vnv && rm .vnvtmp
 
-COPY --from=swfft ${SOURCE_DIR}/swfft ${SOURCE_DIR}/swfft
-ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/swfft/build/vnv.__registration__
-
-COPY --from=xsbench ${SOURCE_DIR}/xs-bench ${SOURCE_DIR}/xs-bench
-ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/xs-bench/vnv.__registration__
+COPY --from=xsbench ${SOFTWARE_DIR}/xs-bench ${SOFTWARE_DIR}/xs-bench
+COPY --from=xsbench /home/user/.vnv /home/user/.vnvtmp
+RUN cd ${HOME} && awk '!seen[$0]++' .vnv .vnvtmp > .vnvt && mv .vnvt .vnv && rm .vnvtmp
 
 COPY all_config /config
-ENV VNV_CONFIG=${VNV_CONFIG}:/config/vnv.__registration__
+RUN cat /config/vnv.registration >> ${HOME}.vnv

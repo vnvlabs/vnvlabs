@@ -4,9 +4,10 @@ ARG REPO=ghcr.io/vnvlabs
 FROM ${REPO}/simple:${VERSION} as simple
 FROM ${REPO}/heat:${VERSION} as heat
 
-COPY --from=simple ${SOURCE_DIR}/simple ${SOURCE_DIR}/simple
-ENV VNV_CONFIG=${VNV_CONFIG}:${SOURCE_DIR}/simple/build/vnv.__registration__:
+COPY --from=simple ${SOFTWARE_DIR}/simple ${SOFTWARE_DIR}/simple
+COPY --from=simple /home/user/.vnv /home/user/.vnvtmp
+RUN cd ${HOME} && awk '!seen[$0]++' .vnv .vnvtmp > .vnvt && mv .vnvt .vnv && rm .vnvtmp
+
 
 COPY demo_config /config
-ENV VNV_CONFIG=${VNV_CONFIG}:/config/vnv.__registration__
-
+RUN cat /config/vnv.registration >> ${HOME}.vnv
