@@ -81,7 +81,7 @@ def ACTION(stage, extra=[]):
 
     b = [{
         "name": "Build Stage " + stage,
-        "run": "python .github/workflows/rebuild_containers_.py --push --stage " + stage
+        "run": "python .github/workflows/rebuild_containers_.py --gen 0 --push --stage " + stage
     }]
 
     return a + extra + b
