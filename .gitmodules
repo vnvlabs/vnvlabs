@@ -43,3 +43,9 @@
 [submodule "applications/moose"]
 	path = applications/moose
 	url = git@github.com:vnvlabs/moose.git
+[submodule "plugins/issues"]
+	path = plugins/issues
+	url = git@github.com:vnvlabs/issues.git
+[submodule "plugins/psip"]
+	path = plugins/psip
+	url = git@github.com:vnvlabs/psip.git

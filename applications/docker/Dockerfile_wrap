@@ -22,10 +22,15 @@ COPY --from=0 /vnvgui/node /vnvgui/node
 COPY --from=0 /vnvgui/theia /vnvgui/theia
 COPY --from=0 /vnvgui/gui /vnvgui/gui
 COPY --from=0 /vnvgui/paraview /vnvgui/paraview 
+
+#Need to figure out this environment variable problem. 
 COPY --from=1 ${SOFTWARE_DIR}/plugins ${SOFTWARE_DIR}/plugins
+ENV VNV_CONFIG=${VNV_CONFIG}:${SOFTWARE_DIR}/plugins/psip/gui/vnv.__registration__
+ENV VNV_CONFIG=${VNV_CONFIG}:${SOFTWARE_DIR}/plugins/issues/gui/vnv.__registration__
+ENV VNV_PLUGINS=${VNV_PLUGINS}@PSIP:${SOFTWARE_DIR}/plugins/psip/lib/libpsip.so
+ENV VNV_PLUGINS=${VNV_PLUGINS}@issues:${SOFTWARE_DIR}/plugins/issues/lib/libissues.so
+ENV VNV_PLUGINS=${VNV_PLUGINS}@Papi:${SOFTWARE_DIR}/plugins/perf/lib/libpapiTest.so
 
 LABEL VNV_GUI_EQUIPT=1
 WORKDIR /vnvgui/gui
 ENTRYPOINT ["./launch.sh"] 
-
-

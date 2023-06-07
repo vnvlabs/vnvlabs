@@ -139,6 +139,8 @@ STAGES = {
     "gui": dict(path="gui", reponame="gui", from_image=None, extra=gui_extra),
     "vnv": dict(path="vnv", reponame="vnv", from_image="env", from_tag=TAG),
     "performance": dict(path="plugins/performance", reponame="performance", from_image="vnv", from_tag=TAG),
+    "psip": dict(path="plugins/psip", reponame="psip", from_image="vnv", from_tag=TAG, dockerfile="vnv/Dockerfile"),
+    "issues": dict(path="plugins/issues", reponame="issues", from_image="vnv", from_tag=TAG, dockerfile="vnv/Dockerfile"),
     "asgard": dict(path="applications/asgard", reponame="asgard", from_image="vnv", from_tag=TAG, dockerfile="vnv/Dockerfile"),
     "heat": dict(path="applications/heat", reponame="heat", from_image="vnv", from_tag=TAG, dockerfile="vnv/Dockerfile"),
     "simple": dict(path="applications/simple", reponame="simple", from_image="vnv", from_tag=TAG,  dockerfile="vnv/Dockerfile"),
@@ -150,7 +152,7 @@ STAGES = {
     "libmesh": dict(path="applications/libmesh", reponame="libmesh", from_image="petsc", from_tag=TAG, dockerfile="vnv/Dockerfile"),
     "mfem": dict(path="applications/mfem", reponame="mfem", from_image="petsc", from_tag=TAG, dockerfile="vnv/Dockerfile"),
     "moose": dict(path="applications/moose", reponame="moose", from_image="libmesh", from_tag=TAG, dockerfile="vnv/Dockerfile"),
-    "plugins": dict(path="plugins/Dockerfile_all", reponame="plugins", dependencies=[f"performance:{TAG}"], build_args=build_args),
+    "plugins": dict(path="plugins/Dockerfile_all", reponame="plugins", dependencies=[f"performance:{TAG}",f"issues:{TAG}",f"psip:{TAG}"], build_args=build_args),
     "demo": dict(path="applications/docker/Dockerfile_demo", reponame="demo", dependencies=[f"simple:{TAG}", f"heat:{TAG}"], build_args=build_args),
     "proxyapps": dict(path="applications/docker/Dockerfile_proxyapps", reponame="proxyapps", dependencies=[f"swfft:{TAG}", f"miniamr:{TAG}", f"xsbench:{TAG}"], build_args=build_args),
     "all": dict(path="applications/docker/Dockerfile_all", reponame="all", dependencies=[f"asgard:{TAG}", f"simple:{TAG}", f"heat:{TAG}", f"swfft:{TAG}", f"miniamr:{TAG}", f"xsbench:{TAG}", f"moose:{TAG}"], build_args=build_args)
