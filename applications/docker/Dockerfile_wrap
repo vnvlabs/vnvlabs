@@ -22,10 +22,8 @@ COPY --from=0 /vnvgui/node /vnvgui/node
 COPY --from=0 /vnvgui/theia /vnvgui/theia
 COPY --from=0 /vnvgui/gui /vnvgui/gui
 COPY --from=0 /vnvgui/paraview /vnvgui/paraview 
-
 COPY --from=1 ${SOFTWARE_DIR}/plugins ${SOFTWARE_DIR}/plugins
-COPY --from=1 /home/user/.vnv /home/user/.vnvtmp
-RUN cd ${HOME} && awk '!seen[$0]++' .vnv .vnvtmp > .vnvt && mv .vnvt .vnv && rm .vnvtmp
+
 LABEL VNV_GUI_EQUIPT=1
 WORKDIR /vnvgui/gui
 ENTRYPOINT ["./launch.sh"] 

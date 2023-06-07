@@ -29,8 +29,7 @@ parser.add_argument('--stage', type=str, help='Stage', default="env")
 parser.add_argument('--gen', type=int, help='0 for build, 1 for release, 2 for local, 3 to generate github workflow')
 parser.add_argument('--verbose', action='store_true', help='Verbose')
 parser.add_argument('--release', type=str, help="release version", default="")
-parser.add_argument('--local', action='store_true', help='Run locally in serial')
-
+parser.add_argument('--cont', type=str, default=None,help="continue from here if in local mode")
 # Parse the arguments
 args = parser.parse_args()
 
@@ -45,7 +44,7 @@ PUSH_TO_GHCR = args.push
 STAGE = args.stage
 BUILDING = args.gen
 VERBOSE = args.verbose
-RUN_LOCAL = False
+CONTINUE = args.cont
 REBUILD_INFO = {}
 docker_client = docker.from_env()
 
@@ -218,6 +217,16 @@ def pull_image(image, tag=TAG):
         return None
 
 def get_image_labels(image, tag=TAG, lab="vnvsha"):
+        
+        #Try local first 
+        try:
+            im = docker_client.images.get(image,tag=tag)
+            if im is not None: 
+                return im.labels
+        except:
+            pass
+        
+        #Otherwise, use skopeo to inspect without downloading the whole thing. 
         res = subprocess.check_output(
             ['skopeo', 'inspect', f"docker://{image}:{tag}"]).decode('ascii')
 
@@ -420,7 +429,10 @@ elif BUILDING == 1 and len(RELEASE_VERSION):
 elif BUILDING == 2:
   done = set()
   while len(done) < len(STAGES.keys()):
+    
+    
     for key,value in STAGES.items():
+        
         
         if key in done:
             continue
@@ -435,7 +447,15 @@ elif BUILDING == 2:
                 done.add(key)
                 print("Building ", key)
                 #Build it cause all deps are done
-                if not rebuild_if_needs(**value):
+                skip = False
+                if CONTINUE is not None:
+                    
+                    if CONTINUE == key:
+                        CONTINUE = None
+                    else:
+                        print("Skipping due to continue ", key )
+                        skip = True    
+                if not skip and not rebuild_if_needs(**value):
                     print("Build failed")
                     exit(1)
   

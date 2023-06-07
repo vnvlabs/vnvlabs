@@ -3,18 +3,14 @@ ARG REPO=ghcr.io/vnvlabs
 
 
 FROM ${REPO}/swfft:${VERSION} as swfft
-
 FROM ${REPO}/miniamr:${VERSION} as miniamr
-
 FROM ${REPO}/xsbench:${VERSION} as xsbench
 
 COPY --from=miniamr ${SOFTWARE_DIR}/miniAMR ${SOFTWARE_DIR}/miniAMR
-COPY --from=miniamr /home/user/.vnv /home/user/.vnvtmp
-RUN cd ${HOME} && awk '!seen[$0]++' .vnv .vnvtmp > .vnvt && mv .vnvt .vnv && rm .vnvtmp
-
 COPY --from=swfft ${SOFTWARE_DIR}/swfft ${SOFTWARE_DIR}/swfft
-COPY --from=swfft /home/user/.vnv /home/user/.vnvtmp
-RUN cd ${HOME} && awk '!seen[$0]++' .vnv .vnvtmp > .vnvt && mv .vnvt .vnv && rm .vnvtmp
+ENV VNV_CONFIG=${VNV_CONFIG}:${SOFTWARE_DIR}/swfft/vnv/gui/vnv.__registration__ 
+ENV VNV_CONFIG=${VNV_CONFIG}:${SOFTWARE_DIR}/miniAMR/vnv/gui/vnv.__registration__ 
 
 COPY proxy_config /config
-RUN cat /config/vnv.registration >> ${HOME}.vnv
+ENV VNV_CONFIG=${VNV_CONFIG}:/config/vnv.registration
+

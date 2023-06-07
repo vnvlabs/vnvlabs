@@ -1,13 +1,11 @@
-ARG VERSION=latest
+ARG VERSION=nightly
 ARG REPO=ghcr.io/vnvlabs
 
 FROM ${REPO}/simple:${VERSION} as simple
 FROM ${REPO}/heat:${VERSION} as heat
 
 COPY --from=simple ${SOFTWARE_DIR}/simple ${SOFTWARE_DIR}/simple
-COPY --from=simple /home/user/.vnv /home/user/.vnvtmp
-RUN cd ${HOME} && awk '!seen[$0]++' .vnv .vnvtmp > .vnvt && mv .vnvt .vnv && rm .vnvtmp
-
+ENV VNV_CONFIG=${VNV_CONFIG}:${SOFTWARE_DIR}/simple/gui/vnv.__registration__ 
 
 COPY demo_config /config
-RUN cat /config/vnv.registration >> ${HOME}.vnv
+ENV VNV_CONFIG=${VNV_CONFIG}:/config/vnv.__registration__
