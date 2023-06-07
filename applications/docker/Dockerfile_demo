@@ -5,7 +5,8 @@ FROM ${REPO}/simple:${VERSION} as simple
 FROM ${REPO}/heat:${VERSION} as heat
 
 COPY --from=simple ${SOFTWARE_DIR}/simple ${SOFTWARE_DIR}/simple
-ENV VNV_CONFIG=${VNV_CONFIG}:${SOFTWARE_DIR}/simple/gui/vnv.__registration__ 
+COPY --from=simple ${HOME}/.vnv ${HOME}/.vnvt
+RUN ${VNV_MERGE} ${HOME}/.vnvt
 
 COPY demo_config /config
-ENV VNV_CONFIG=${VNV_CONFIG}:/config/vnv.__registration__
+RUN ${VNV_REGISTER} gui demo /config/vnv.registration

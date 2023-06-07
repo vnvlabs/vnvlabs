@@ -1,8 +1,8 @@
 
 
 ARG FROM_IMAGE=ubuntu:20.04
-ARG GUI_IMAGE=ghcr.io/vnvlabs/gui:v1.0
-ARG PLUGIN_IMAGE=ghrc.io/vnvlabs/performance:v1.0
+ARG GUI_IMAGE=ghcr.io/vnvlabs/gui:nightly
+ARG PLUGIN_IMAGE=ghcr.io/vnvlabs/plugins:nightly
 
 FROM ${GUI_IMAGE}
 
@@ -17,6 +17,7 @@ ENV PARAVIEW_DIR=/vnvgui/paraview
 ENV PVPYTHON=${PARAVIEW_DIR}/bin/pvpython 
 ENV PATH=/vnvgui/node/bin/:$PATH 
 ENV DOWNLOAD_PARAVIEW=1
+ENV SOFTWARE_DIR=/home/user/software
 
 COPY --from=0 /vnvgui/node /vnvgui/node
 COPY --from=0 /vnvgui/theia /vnvgui/theia
@@ -24,12 +25,9 @@ COPY --from=0 /vnvgui/gui /vnvgui/gui
 COPY --from=0 /vnvgui/paraview /vnvgui/paraview 
 
 #Need to figure out this environment variable problem. 
-COPY --from=1 ${SOFTWARE_DIR}/plugins ${SOFTWARE_DIR}/plugins
-ENV VNV_CONFIG=${VNV_CONFIG}:${SOFTWARE_DIR}/plugins/psip/gui/vnv.__registration__
-ENV VNV_CONFIG=${VNV_CONFIG}:${SOFTWARE_DIR}/plugins/issues/gui/vnv.__registration__
-ENV VNV_PLUGINS=${VNV_PLUGINS}@PSIP:${SOFTWARE_DIR}/plugins/psip/lib/libpsip.so
-ENV VNV_PLUGINS=${VNV_PLUGINS}@issues:${SOFTWARE_DIR}/plugins/issues/lib/libissues.so
-ENV VNV_PLUGINS=${VNV_PLUGINS}@Papi:${SOFTWARE_DIR}/plugins/perf/lib/libpapiTest.so
+COPY --from=1 /home/user/plugins /vnv_plugins
+COPY --from=1 $/home/user/.vnv /vnv_plugins.vnvt
+RUN ${VNV_MERGE} /home/user/.vnvt || echo "VnV Not Found" 
 
 LABEL VNV_GUI_EQUIPT=1
 WORKDIR /vnvgui/gui

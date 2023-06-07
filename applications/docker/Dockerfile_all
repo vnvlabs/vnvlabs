@@ -19,13 +19,26 @@ COPY --from=miniamr ${SOFTWARE_DIR}/miniAMR ${SOFTWARE_DIR}/miniAMR
 COPY --from=swfft ${SOFTWARE_DIR}/swfft ${SOFTWARE_DIR}/swfft
 COPY --from=xsbench ${SOFTWARE_DIR}/xs-bench ${SOFTWARE_DIR}/xs-bench
 
-ENV VNV_CONFIG=${VNV_CONFIG}:${SOFTWARE_DIR}/simple/gui/vnv.__registration__ 
-ENV VNV_CONFIG=${VNV_CONFIG}:${SOFTWARE_DIR}/heat/gui/vnv.__registration__ 
-ENV VNV_CONFIG=${VNV_CONFIG}:${SOFTWARE_DIR}/asgard/vnv/config/vnv.__registration__ 
-ENV VNV_CONFIG=${VNV_CONFIG}:${SOFTWARE_DIR}/mfem/gui/vnv.__registration__ 
-ENV VNV_CONFIG=${VNV_CONFIG}:${SOFTWARE_DIR}/miniAMR/vnv/gui/vnv.__registration__ 
-ENV VNV_CONFIG=${VNV_CONFIG}:${SOFTWARE_DIR}/swfft/vnv/gui/vnv.__registration__ 
-ENV VNV_CONFIG=${VNV_CONFIG}:${SOFTWARE_DIR}/xs-bench/vnv/gui/vnv.__registration__ 
+COPY --from=simple ${HOME}/.vnv ${HOME}/.vnvt
+RUN ${VNV_MERGE} ${HOME}/.vnvt
+
+COPY --from=heat ${HOME}/.vnv ${HOME}/.vnvt
+RUN ${VNV_MERGE} ${HOME}/.vnvt
+
+COPY --from=asgard ${HOME}/.vnv ${HOME}/.vnvt
+RUN ${VNV_MERGE} ${HOME}/.vnvt
+
+COPY --from=mfem ${HOME}/.vnv ${HOME}/.vnvt
+RUN ${VNV_MERGE} ${HOME}/.vnvt
+
+COPY --from=miniamr ${HOME}/.vnv ${HOME}/.vnvt
+RUN ${VNV_MERGE} ${HOME}/.vnvt
+
+COPY --from=swfft ${HOME}/.vnv ${HOME}/.vnvt
+RUN ${VNV_MERGE} ${HOME}/.vnvt
+
+COPY --from=xsbench ${HOME}/.vnv ${HOME}/.vnvt
+RUN ${VNV_MERGE} ${HOME}/.vnvt
 
 COPY all_config /config
-ENV VNV_CONFIG=${VNV_CONFIG}:/config/vnv.registration
+RUN ${VNV_REGISTER} gui all /config/vnv.registration
