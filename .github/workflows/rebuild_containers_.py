@@ -124,7 +124,7 @@ gui_extra = [
         "uses": "actions/cache@v3",
         "id": "download-paraview",
         "with": {
-              "path": "./pv.tar.gz",
+              "path": "gui/pv.tar.gz",
               "key": "download-paraview"
         }
     }, {
