@@ -306,7 +306,7 @@ def get_sha_from_path(path):
 
 def needs_rebuild(path, reponame, cachetag=REFTAG, otag=TAG, repo=REPO_OWNER, from_image=None, from_tag=TAG, dependencies=[], **kwargs):
 
-    if FULLREBUILD:
+    if FULLREBUILD and reponame != "env":
         print("Full rebuild requested")
         return True
 
