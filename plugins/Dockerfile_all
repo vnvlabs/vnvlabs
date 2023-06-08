@@ -7,8 +7,8 @@ FROM ${REPO}/issues:${VERSION} as issues
 
 #Need to figure out this environment variable problem. 
 COPY --from=performance ${SOFTWARE_DIR}/plugins/perf /${SOFTWARE_DIR}/plugins/perf
-COPY --from=performance ${HOME}/.vnv ${HOME}/.vnvt
-RUN ${VNV_MERGE} ${HOME}/.vnvt 
+COPY --from=performance /${HOME}/.vnv /${HOME}/.vnvt
+RUN ${VNV_MERGE} /${HOME}/.vnvt 
 
 #Need to figure out this environment variable problem. 
 COPY --from=psip ${SOFTWARE_DIR}/plugins/psip /${SOFTWARE_DIR}/plugins/psip

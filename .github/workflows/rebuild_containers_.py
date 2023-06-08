@@ -138,7 +138,7 @@ STAGES = {
     "env": dict(path="env/Dockerfile", reponame="env"),
     "gui": dict(path="gui", reponame="gui", from_image=None, extra=gui_extra),
     "vnv": dict(path="vnv", reponame="vnv", from_image="env", from_tag=TAG),
-    "performance": dict(path="plugins/performance", reponame="vnv", from_image="vnv", from_tag=TAG),
+    "performance": dict(path="plugins/performance", reponame="performance", from_image="vnv", from_tag=TAG),
     "psip": dict(path="plugins/psip", reponame="psip", from_image="vnv", from_tag=TAG, dockerfile="vnv/Dockerfile"),
     "issues": dict(path="plugins/issues", reponame="issues", from_image="vnv", from_tag=TAG, dockerfile="vnv/Dockerfile"),
     "plugins": dict(path="plugins/Dockerfile_all", reponame="plugins", dependencies=[f"performance:{TAG}",f"issues:{TAG}",f"psip:{TAG}"], build_args=build_args),
@@ -220,13 +220,6 @@ def pull_image(image, tag=TAG):
 
 def get_image_labels(image, tag=TAG, lab="vnvsha"):
         
-        #Try local first 
-        try:
-            im = docker_client.images.get(image,tag=tag)
-            if im is not None: 
-                return im.labels
-        except:
-            pass
         
         #Otherwise, use skopeo to inspect without downloading the whole thing. 
         res = subprocess.check_output(

@@ -24,10 +24,6 @@ COPY --from=0 /vnvgui/theia /vnvgui/theia
 COPY --from=0 /vnvgui/gui /vnvgui/gui
 COPY --from=0 /vnvgui/paraview /vnvgui/paraview 
 
-#Need to figure out this environment variable problem. 
-COPY --from=1 /home/user/plugins /vnv_plugins
-COPY --from=1 $/home/user/.vnv /vnv_plugins.vnvt
-RUN ${VNV_MERGE} /home/user/.vnvt || echo "VnV Not Found" 
 
 LABEL VNV_GUI_EQUIPT=1
 WORKDIR /vnvgui/gui
