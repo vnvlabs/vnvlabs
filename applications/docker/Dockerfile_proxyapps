@@ -15,5 +15,5 @@ COPY --from=swfft ${HOME}/.vnv ${HOME}/.vnvt
 RUN ${VNV_MERGE} ${HOME}/.vnvt
 
 COPY proxy_config /config
-RUN ${VNV_REGISTER} proxyapps demo /config/vnv.registration
+RUN ${VNV_REGISTER} proxyapps demo /config/vnv.__registration__
 

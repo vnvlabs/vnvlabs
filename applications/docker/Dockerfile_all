@@ -41,4 +41,4 @@ COPY --from=xsbench ${HOME}/.vnv ${HOME}/.vnvt
 RUN ${VNV_MERGE} ${HOME}/.vnvt
 
 COPY all_config /config
-RUN ${VNV_REGISTER} gui all /config/vnv.registration
+RUN ${VNV_REGISTER} gui all /config/vnv.__registration__
