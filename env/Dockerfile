@@ -92,4 +92,5 @@ RUN echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mon
 RUN apt-get update && apt-get install -y mongodb-org
 
 
-
+# Copy the bashrc file to the home directory so it works. 
+RUN cp /root/.bashrc ${HOME}/.bashrc
