@@ -72,7 +72,7 @@ RUN mkdir -p ${SOFTWARE_DIR} && git clone https://github.com/ornladios/ADIOS2.gi
 
 
 #Install PAPI (used in the plugins)
-RUN git clone https://bitbucket.org/icl/papi.git &&  cd papi/src && ./configure && make && make install  
+RUN git clone https://github.com/icl-utk-edu/papi.git &&  cd papi/src && ./configure && make && make install  
 
 
 # mongo db is broken in apt -- install from source.
