@@ -120,9 +120,17 @@ COPY ./build_scripts/build_moose.sh /build_scripts/build_moose.sh
 COPY ./applications/moose ${SOURCE_DIR}/applications/moose
 RUN /build_scripts/build_moose.sh
 
-COPY ./build_scripts/build_hit.sh /build_scripts/build_hit.sh
+COPY ./build_scripts/build_gui.sh /build_scripts/build_gui.sh
 COPY ./gui ${SOURCE_DIR}/gui
-RUN /build_scripts/build_hit.sh
+RUN /build_scripts/build_gui.sh
+
+#Copy git stuff over and fix everything so it works
+COPY .git ${SOURCE_DIR}/.git
+COPY .gitmodules ${SOURCE_DIR}/.gitmodules
+RUN  git config --global user.email "boneill@rnet-tech.com"
+RUN  git config --global user.email "Ben O'Neill"
+RUN  git config --global --add safe.directory "*"
+
 
 
 

@@ -4,7 +4,6 @@
 
 #Build MINIAMR
 cd ${SOURCE_DIR}/applications/miniamr/ref \
-    && make clean \
     && bear make -j \
     && ${VNV_DIR}/bin/vnv-matcher --package MINIAMR \
                                   --output vnv_MINIAMR.c\
