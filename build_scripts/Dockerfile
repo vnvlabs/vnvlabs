@@ -127,9 +127,8 @@ RUN /build_scripts/build_gui.sh
 #Copy git stuff over and fix everything so it works
 COPY .git ${SOURCE_DIR}/.git
 COPY .gitmodules ${SOURCE_DIR}/.gitmodules
-RUN  git config --global user.email "boneill@rnet-tech.com"
-RUN  git config --global user.email "Ben O'Neill"
-RUN  git config --global --add safe.directory "*"
+COPY ./build_scripts/build_git.sh /build_scripts/build_git.sh
+RUN  /build_scripts/build_git.sh
 
 
 
