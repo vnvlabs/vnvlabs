@@ -29,6 +29,9 @@ ENV MOOSE_DIR=${SOURCE_DIR}/applications/moose
 ENV PETSC_DIR=${SOFTWARE_DIR}/petsc
 ENV PETSC_ARCH=""
 
+COPY ./build_scripts/utils /build_scripts/utils
+
+
 COPY ./build_scripts/build_apt_get.sh /build_scripts/build_apt_get.sh
 RUN /build_scripts/build_apt_get.sh
 
