@@ -133,7 +133,7 @@ gui_extra = [
     }, {
         "if": "${{steps.download-paraview.outputs.cache-hit != 'true'}}",
         "name": "Download the paraview binary",
-        "run": "cd gui && ./download_paraview.sh"
+        "run": "cd gui && ./scripts/download_paraview.sh"
     }
 ]
 
@@ -223,17 +223,25 @@ def pull_image(image, tag=TAG):
 
 def get_image_labels(image, tag=TAG, lab="vnvsha"):
         
+      try:  
         
         #Otherwise, use skopeo to inspect without downloading the whole thing. 
         res = subprocess.check_output(
             ['skopeo', 'inspect', f"docker://{image}:{tag}"]).decode('ascii')
 
         return json.loads(res)["Labels"]
-    
+      except:
+          return {}
+
 
 def check_image_sha(image, tag=TAG, sha="none", lab="vnvsha"):
+    
+    if FULLREBUILD:
+        return True, "Full Rebuild"
+    
     try:
 
+        
         res = subprocess.check_output(
             ['skopeo', 'inspect', f"docker://{image}:{tag}"]).decode('ascii')
 
@@ -309,7 +317,7 @@ def get_sha_from_path(path):
 
 def needs_rebuild(path, reponame, cachetag=REFTAG, otag=TAG, repo=REPO_OWNER, from_image=None, from_tag=TAG, dependencies=[], **kwargs):
 
-    if FULLREBUILD and reponame != "env":
+    if FULLREBUILD:
         print("Full rebuild requested")
         return True
 
@@ -363,7 +371,7 @@ def rebuild_if_needs(path, reponame, repo=REPO_OWNER, otag=TAG, cachetag=REFTAG,
         labs = { "vnvsha" :  get_sha_from_path(path) }
         for dep in all_deps:
             spl = dep.split(":")
-            labs[ f"vnv_dep_sha_{dep.replace(':','_')}" ] = get_image_labels(repo_name(spl[0], repo=repo), tag=spl[1])["vnvsha"]
+            labs[ f"vnv_dep_sha_{dep.replace(':','_')}" ] = get_image_labels(repo_name(spl[0], repo=repo), tag=spl[1]).get("vnvsha","unknown")
          
         
         isdir = os.path.isdir(path)

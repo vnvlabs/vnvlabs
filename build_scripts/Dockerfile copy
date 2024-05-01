@@ -36,7 +36,6 @@ RUN /vnvlabs/build_scripts/build_cmake.sh
 RUN /vnvlabs/build_scripts/build_adios.sh
 RUN /vnvlabs/build_scripts/build_papi.sh
 RUN /vnvlabs/build_scripts/build_llvm.sh
-RUN /vnvlabs/build_scripts/build_mongo.sh
 RUN /vnvlabs/build_scripts/build_node.sh
 RUN /vnvlabs/build_scripts/build_theia.sh
 RUN /vnvlabs/build_scripts/build_paraview.sh

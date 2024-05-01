@@ -47,9 +47,6 @@ RUN /build_scripts/build_papi.sh
 COPY ./build_scripts/build_llvm.sh /build_scripts/build_llvm.sh
 RUN /build_scripts/build_llvm.sh
 
-COPY ./build_scripts/build_mongo.sh /build_scripts/build_mongo.sh
-RUN /build_scripts/build_mongo.sh
-
 COPY ./build_scripts/build_node.sh /build_scripts/build_node.sh
 RUN /build_scripts/build_node.sh
 

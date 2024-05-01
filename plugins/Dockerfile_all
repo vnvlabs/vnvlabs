@@ -12,6 +12,7 @@ RUN ${VNV_MERGE} /${HOME}/.vnvt
 
 #Need to figure out this environment variable problem. 
 COPY --from=psip ${SOFTWARE_DIR}/plugins/psip /${SOFTWARE_DIR}/plugins/psip
-COPY --from=psip ${HOME}/.vnv ${HOME}.vnvt
-RUN ${VNV_MERGE} ${HOME}/.vnvt 
+COPY --from=psip ${HOME}/.vnv ${HOME}.vnvp
+RUN ${VNV_MERGE} ${HOME}/.vnvp
+
 

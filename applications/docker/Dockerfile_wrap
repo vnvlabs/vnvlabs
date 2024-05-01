@@ -1,7 +1,7 @@
 
 
-ARG FROM_IMAGE=ubuntu:20.04
-ARG GUI_IMAGE=ghcr.io/vnvlabs/gui:nightly
+ARG FROM_IMAGE=ghcr.io/vnvlabs/moose:nightly
+ARG GUI_IMAGE=ghcr.io/vnvlabs/gui:debug
 ARG PLUGIN_IMAGE=ghcr.io/vnvlabs/plugins:nightly
 
 FROM ${GUI_IMAGE}

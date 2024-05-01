@@ -75,22 +75,5 @@ RUN mkdir -p ${SOFTWARE_DIR} && git clone https://github.com/ornladios/ADIOS2.gi
 RUN git clone https://github.com/icl-utk-edu/papi.git &&  cd papi/src && ./configure && make && make install  
 
 
-# mongo db is broken in apt -- install from source.
-RUN git clone https://github.com/mongodb/mongo-c-driver.git \
-    && cd mongo-c-driver \
-    && git checkout 1.20.1 \
-    && python3 build/calc_release_version.py > VERSION_CURRENT \
-    && mkdir cmake-build \
-    && cd cmake-build \
-    && cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF .. \
-    && cmake --build . \
-    && cmake --build . --target install
-
-
-RUN wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | apt-key add - 
-RUN echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-6.0.list
-RUN apt-get update && apt-get install -y mongodb-org
-
-
 # Copy the bashrc file to the home directory so it works. 
 RUN cp /root/.bashrc ${HOME}/.bashrc
