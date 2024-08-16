@@ -37,6 +37,7 @@ function check_and_build() {
     # If we are done with this image, then we can delete it
     if [ "${DONE}" = "yes"]; then
         docker rmi ${REPO_OWNER}/${REPO_NAME}:${REON}
+	docker image prune -f 
     fi
 }
 
