@@ -43,7 +43,7 @@ link_vnv_file function to link there library. Here is a really simple example CM
     
     find_package(Injection REQUIRED)
     add_executable(heat "heat.cpp")
-    link_vnv_file(heat Heat cpp)
+    link_vnv_executable(heat Heat cpp)
   
 We have integrated VnV into a number of different applications: 
    - https://github.com/vnvlabs/heat

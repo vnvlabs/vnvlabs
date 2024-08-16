@@ -6,11 +6,10 @@ FROM ubuntu:20.04
 ENV llvm_version=12
 ENV TZ=America/New_York
 ENV DEBIAN_FRONTEND=noninteractive 
-ENV SOURCE_DIR=/home/user/source
-ENV SOFTWARE_DIR=/home/user/software
-ENV HOME=/home/user
-ENV ADIOS_DIR=${SOFTWARE_DIR}/adios
+ENV SOURCE_DIR=/source
+ENV SOFTWARE_DIR=/software
 ENV LLVM_DIR=/usr/lib/llvm-${llvm_version}
+ENV VNV_HOME_PATH=/software
 
 RUN apt-get -y update && apt-get -y upgrade && apt-get purge openmpi* && apt-get -y install \
     build-essential \
@@ -50,7 +49,7 @@ RUN apt-get -y update && apt-get -y upgrade && apt-get purge openmpi* && apt-get
     valgrind \
     pkg-config \
     libsecret-1-dev \
-    libblas64-3 && pip3 install virtualenv  
+    libblas64-3
 
 #Install cmake
 RUN mkdir -p cmake &&\
@@ -65,15 +64,6 @@ RUN wget https://apt.llvm.org/llvm.sh && chmod u+x ./llvm.sh && ./llvm.sh ${llvm
 
 RUN apt-get purge -y openmpi*
 
-#Install adios
-RUN mkdir -p ${SOFTWARE_DIR} && git clone https://github.com/ornladios/ADIOS2.git ADIOS && mkdir adios2-build && cd adios2-build \
-  && cmake -DCMAKE_INSTALL_PREFIX=${ADIOS_DIR} ../ADIOS && make -j 16 && make install && cd .. && rm -r adios2-build \
-  && rm -r ADIOS 
-
-
 #Install PAPI (used in the plugins)
 RUN git clone https://github.com/icl-utk-edu/papi.git &&  cd papi/src && ./configure && make && make install  
 
-
-# Copy the bashrc file to the home directory so it works. 
-RUN cp /root/.bashrc ${HOME}/.bashrc

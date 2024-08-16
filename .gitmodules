@@ -37,9 +37,6 @@
 [submodule "plugins/performance"]
 	path = plugins/performance
 	url = git@github.com:vnvlabs/performance.git
-[submodule "plugins/quantify"]
-	path = plugins/quantify
-	url = git@github.com:vnvlabs/quantify.git
 [submodule "applications/moose"]
 	path = applications/moose
 	url = git@github.com:vnvlabs/moose.git
