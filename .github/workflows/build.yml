@@ -13,6 +13,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
+    - name: Maximize build disk space
+      uses: easimon/maximize-build-space@v10
+      with:
+          remove-dotnet: true
+          remove-android: true
+          remove-haskell: true
+          remove-docker-images: true
+          
     - name: Checkout repository
       uses: actions/checkout@v3
       with:
