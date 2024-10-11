@@ -1,6 +1,16 @@
 # The VnVLabs Project:
 
-VnVLabs is an simple, low-code framework for automated GUI building in scientific applications and libraries. The project consists of two parts:
+VnVLabs is an simple, low-code framework for automated GUI building in scientific applications and libraries. 
+
+You can run a VnVLabs interface demo with the following command:
+
+    docker run -it -p 5000:5010-5000:5010 ghcr.io/vnvlabs/heat:run 
+
+This command will download a demo image and launch the container. To use the VnV interface, navigate to localhost:5000 in your 
+web browser. 
+
+
+The project consists of two parts:
 
    - vnv : The VnV Toolkit API is an interface between scientific software. 
    - gui : The VnV Graphical user interface 
@@ -16,18 +26,6 @@ locally, and on the web, making it an extremely effective approach for both loca
 That said, the true power of the VnV Graphical User Interface comes from its integration with the VnV Toolkit. The VnV Toolkit provides a large set of macros that, when 
 included in your code base, allow for features like; auto completion of input files, runtime integration testing, performance monitoring, automatic report generation, live
 data visualization and more. 
-
-TODO: Add a gif
-
-## A Simple Demo Application.
-
-The easiest way to spin up a VnV GUI is with docker: 
-
-    docker run --rm -it -p 5001:5001 ghcr.io/vnvlabs/all /vnv-gui/run.sh
-
-Once that command is finished, navigate to localhost:5001 in the browser to see the GUI. This docker image includes a number of popular scientific 
-applications that have been augmented with VnV Toolkit Macros to improve their functionality within the GUI. The application source is available 
-int the /user/dev/source directory. It is installed in the "/user/dev/software" directory. 
 
 
 ## Integrate VnV Into your code base
@@ -78,11 +76,8 @@ The main repos are:
 
 # License:
 
-Each repository contains its own licensing information. FFor the most part, all vnvlabs code (the core api,
+Each repository contains its own licensing information. For the most part, all vnvlabs code (the core api,
 the gui, the SAAS server and a few of the application examples) are released using the three clause BSD license. 
 
-This repository includes a number of forks for third party software. All software forks (moose,libmesh,petsc,hypre,mfem,asgard, swfft,xs-bench,miniamr,etc.) are simply exist only for demonstration and testing purposes. We will attempt to keep these forks up to date with the upstream repositories, however, we make no claims that they are up to date at any given time. The hope is that our VnV modifications will eventually make their way into the upstream codebases, removing the need for the vnvlabs forks. 
-   
-   
-   
+This repository includes a number of forks for third party software. All software forks (moose,libmesh,petsc,hypre,mfem,asgard, swfft,xs-bench,miniamr,etc.) exist for demonstration and testing purposes only! Do not use these forks in production. All modifications made in these forks are done so under the license provided in the third party software. 
    
