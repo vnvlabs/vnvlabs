@@ -4,10 +4,17 @@ VnVLabs is an simple, low-code framework for automated GUI building in scientifi
 
 You can run a VnVLabs interface demo with the following command:
 
-    docker run -it -p 5000:5010-5000:5010 ghcr.io/vnvlabs/heat:run 
+    docker run -it -p 5000:5010-5000:5010 ghcr.io/vnvlabs/heat:run
 
 This command will download a demo image and launch the container. To use the VnV interface, navigate to localhost:5000 in your 
 web browser. 
+
+If the machine running docker is not available through localhost, you can set the specific ip address for the resource running
+docker as follows;
+
+    docker run -it -p 5000:5010-5000:5010 ghcr.io/vnvlabs/heat:run --address <ipaddress>
+
+After that command, the interface will be available at <ip-address>:5000 in any modern browser. 
 
 
 The project consists of two parts:
