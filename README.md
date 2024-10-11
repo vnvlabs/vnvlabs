@@ -7,10 +7,8 @@ You can run a VnVLabs interface demo with the following command:
     docker run -it -p 5000:5010-5000:5010 ghcr.io/vnvlabs/heat:run
 
 This command will download a demo image and launch the container. To use the VnV interface, navigate to localhost:5000 in your 
-web browser. 
-
-If the machine running docker is not available through localhost, you can set the specific ip address for the resource running
-docker as follows;
+web browser. If the machine running docker is not available through localhost (i.e, docker is running on a remote machine or inside a VM), you can set the
+specific ip address for the resource running docker as follows;
 
     docker run -it -p 5000:5010-5000:5010 ghcr.io/vnvlabs/heat:run --address <ipaddress>
 
